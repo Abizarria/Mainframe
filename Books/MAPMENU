@@ -1,0 +1,46 @@
+       01  MAPMENUI.
+           02  FILLER PIC X(12).
+           02  TDATAL    COMP  PIC  S9(4).
+           02  TDATAF    PICTURE X.
+           02  FILLER REDEFINES TDATAF.
+             03 TDATAA    PICTURE X.
+           02  TDATAI  PIC X(10).
+           02  THORAL    COMP  PIC  S9(4).
+           02  THORAF    PICTURE X.
+           02  FILLER REDEFINES THORAF.
+             03 THORAA    PICTURE X.
+           02  THORAI  PIC X(8).
+           02  TTRNSL    COMP  PIC  S9(4).
+           02  TTRNSF    PICTURE X.
+           02  FILLER REDEFINES TTRNSF.
+             03 TTRNSA    PICTURE X.
+           02  TTRNSI  PIC X(10).
+           02  TTERML    COMP  PIC  S9(4).
+           02  TTERMF    PICTURE X.
+           02  FILLER REDEFINES TTERMF.
+             03 TTERMA    PICTURE X.
+           02  TTERMI  PIC X(8).
+           02  TNOPCL    COMP  PIC  S9(4).
+           02  TNOPCF    PICTURE X.
+           02  FILLER REDEFINES TNOPCF.
+             03 TNOPCA    PICTURE X.
+           02  TNOPCI  PIC X(1).
+           02  TMSGML    COMP  PIC  S9(4).
+           02  TMSGMF    PICTURE X.
+           02  FILLER REDEFINES TMSGMF.
+             03 TMSGMA    PICTURE X.
+           02  TMSGMI  PIC X(33).
+       01  MAPMENUO REDEFINES MAPMENUI.
+           02  FILLER PIC X(12).
+           02  FILLER PICTURE X(3).
+           02  TDATAO  PIC X(10).
+           02  FILLER PICTURE X(3).
+           02  THORAO  PIC X(8).
+           02  FILLER PICTURE X(3).
+           02  TTRNSO  PIC X(10).
+           02  FILLER PICTURE X(3).
+           02  TTERMO  PIC X(8).
+           02  FILLER PICTURE X(3).
+           02  TNOPCO  PIC X(1).
+           02  FILLER PICTURE X(3).
+           02  TMSGMO  PIC X(33).

@@ -1,0 +1,77 @@
+MAPLIST DFHMSD TYPE=MAP,                                               X00010000
+               TIOAPFX=YES,                                            X00020000
+               MODE=INOUT,                                             X00030000
+               CTRL=(FREEKB,FRSET),                                    X00040000
+               MAPATTS=COLOR,                                          X00050000
+               LANG=COBOL                                               00060000
+*---------------------------------------------------------------------- 00070000
+CABLIST DFHMDI SIZE=(07,80),LINE=01,COLUMN=01,                         X00080000
+               HEADER=YES                                               00090000
+*--------------                                                         00100000
+        DFHMDF POS=(02,02),LENGTH=05,ATTRB=PROT,                       X00110000
+               COLOR=YELLOW,                                           X00120000
+               INITIAL='DATA:'                                          00130000
+                                                                        00140000
+TDATA   DFHMDF POS=(02,08),LENGTH=10,ATTRB=PROT,                       X00150000
+               COLOR=YELLOW                                             00160000
+*--------------                                                         00170000
+        DFHMDF POS=(02,21),LENGTH=40,ATTRB=PROT,                       X00180000
+               COLOR=YELLOW,                                           X00190000
+               INITIAL='FUTURE SCHOOL - CADASTRO DE ALUNOS (ABS)'       00200000
+*--------------                                                         00210000
+        DFHMDF POS=(02,65),LENGTH=05,ATTRB=PROT,                       X00220000
+               COLOR=YELLOW,                                           X00230000
+               INITIAL='HORA:'                                          00240000
+                                                                        00250000
+THORA   DFHMDF POS=(02,71),LENGTH=08,ATTRB=PROT,                       X00260000
+               COLOR=YELLOW                                             00270000
+*--------------                                                         00280000
+        DFHMDF POS=(04,02),LENGTH=06,ATTRB=PROT,                       X00290000
+               COLOR=YELLOW,                                           X00300000
+               INITIAL='TRANS:'                                         00310000
+                                                                        00320000
+TTRNS   DFHMDF POS=(04,09),LENGTH=10,ATTRB=PROT,                       X00330000
+               COLOR=YELLOW                                             00340000
+*--------------                                                         00350000
+        DFHMDF POS=(04,30),LENGTH=09,ATTRB=PROT,                       X00360000
+               COLOR=TURQUOISE,                                        X00370000
+               INITIAL='OPERACAO:'                                      00380000
+                                                                        00390000
+TOPER   DFHMDF POS=(04,40),LENGTH=09,ATTRB=PROT,                       X00400000
+               COLOR=GREEN,                                            X00410000
+               INITIAL=' '                                              00420020
+*--------------                                                         00430000
+        DFHMDF POS=(04,65),LENGTH=05,ATTRB=PROT,                       X00440000
+               COLOR=YELLOW,                                           X00450000
+               INITIAL='TERM:'                                          00460000
+                                                                        00470000
+TTERM   DFHMDF POS=(04,71),LENGTH=08,ATTRB=PROT,                       X00480000
+               COLOR=YELLOW                                             00490000
+*--------------                                                         00500000
+THEAD   DFHMDF POS=(06,02),LENGTH=78,ATTRB=PROT,                       X00510021
+               COLOR=TURQUOISE,                                        X00520000
+               INITIAL=' '                                              00530018
+*---------------------------------------------------------------------- 00540000
+DETLIST DFHMDI LINE=NEXT,                                              X00550016
+               SIZE=(01,80)                                             00560000
+*--------------                                                         00570000
+TINFO   DFHMDF POS=(01,02),LENGTH=78,ATTRB=PROT,                       X00580021
+               COLOR=GREEN,                                            X00590000
+               INITIAL=' '                                              00600020
+*---------------------------------------------------------------------- 00610014
+RODLIST DFHMDI SIZE=(03,80),JUSTIFY=BOTTOM,                            X00620015
+               TRAILER=YES                                              00630015
+*--------------                                                         00640015
+        DFHMDF POS=(02,02),LENGTH=11,ATTRB=PROT,                       X00650022
+               COLOR=RED,                                              X00660011
+               INITIAL='MENSAGEM ->'                                    00670022
+                                                                        00680011
+TMSGM   DFHMDF POS=(02,14),LENGTH=60,ATTRB=PROT,                       X00690022
+               COLOR=RED,                                              X00700011
+               INITIAL=' '                                              00710022
+                                                                        00720022
+TPCUR   DFHMDF POS=(02,79),LENGTH=01,ATTRB=PROT,                       X00730023
+               INITIAL=' '                                              00740022
+*---------------------------------------------------------------------- 00750000
+        DFHMSD TYPE=FINAL                                               00760000
+               END                                                      00770000

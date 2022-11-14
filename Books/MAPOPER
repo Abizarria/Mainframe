@@ -1,0 +1,102 @@
+       01  MAPOPERI.
+           02  FILLER PIC X(12).
+           02  TDATAL    COMP  PIC  S9(4).
+           02  TDATAF    PICTURE X.
+           02  FILLER REDEFINES TDATAF.
+             03 TDATAA    PICTURE X.
+           02  TDATAI  PIC X(10).
+           02  THORAL    COMP  PIC  S9(4).
+           02  THORAF    PICTURE X.
+           02  FILLER REDEFINES THORAF.
+             03 THORAA    PICTURE X.
+           02  THORAI  PIC X(8).
+           02  TTRNSL    COMP  PIC  S9(4).
+           02  TTRNSF    PICTURE X.
+           02  FILLER REDEFINES TTRNSF.
+             03 TTRNSA    PICTURE X.
+           02  TTRNSI  PIC X(10).
+           02  TOPERL    COMP  PIC  S9(4).
+           02  TOPERF    PICTURE X.
+           02  FILLER REDEFINES TOPERF.
+             03 TOPERA    PICTURE X.
+           02  TOPERI  PIC X(9).
+           02  TTERML    COMP  PIC  S9(4).
+           02  TTERMF    PICTURE X.
+           02  FILLER REDEFINES TTERMF.
+             03 TTERMA    PICTURE X.
+           02  TTERMI  PIC X(8).
+           02  TMTRCL    COMP  PIC  S9(4).
+           02  TMTRCF    PICTURE X.
+           02  FILLER REDEFINES TMTRCF.
+             03 TMTRCA    PICTURE X.
+           02  TMTRCI  PIC X(5).
+           02  TNOMEL    COMP  PIC  S9(4).
+           02  TNOMEF    PICTURE X.
+           02  FILLER REDEFINES TNOMEF.
+             03 TNOMEA    PICTURE X.
+           02  TNOMEI  PIC X(30).
+           02  TCURSL    COMP  PIC  S9(4).
+           02  TCURSF    PICTURE X.
+           02  FILLER REDEFINES TCURSF.
+             03 TCURSA    PICTURE X.
+           02  TCURSI  PIC X(30).
+           02  TFONEL    COMP  PIC  S9(4).
+           02  TFONEF    PICTURE X.
+           02  FILLER REDEFINES TFONEF.
+             03 TFONEA    PICTURE X.
+           02  TFONEI  PIC X(15).
+           02  TENDRL    COMP  PIC  S9(4).
+           02  TENDRF    PICTURE X.
+           02  FILLER REDEFINES TENDRF.
+             03 TENDRA    PICTURE X.
+           02  TENDRI  PIC X(30).
+           02  TMAILL    COMP  PIC  S9(4).
+           02  TMAILF    PICTURE X.
+           02  FILLER REDEFINES TMAILF.
+             03 TMAILA    PICTURE X.
+           02  TMAILI  PIC X(30).
+           02  TCONFL    COMP  PIC  S9(4).
+           02  TCONFF    PICTURE X.
+           02  FILLER REDEFINES TCONFF.
+             03 TCONFA    PICTURE X.
+           02  TCONFI  PIC X(27).
+           02  TRESPL    COMP  PIC  S9(4).
+           02  TRESPF    PICTURE X.
+           02  FILLER REDEFINES TRESPF.
+             03 TRESPA    PICTURE X.
+           02  TRESPI  PIC X(1).
+           02  TMSGML    COMP  PIC  S9(4).
+           02  TMSGMF    PICTURE X.
+           02  FILLER REDEFINES TMSGMF.
+             03 TMSGMA    PICTURE X.
+           02  TMSGMI  PIC X(35).
+       01  MAPOPERO REDEFINES MAPOPERI.
+           02  FILLER PIC X(12).
+           02  FILLER PICTURE X(3).
+           02  TDATAO  PIC X(10).
+           02  FILLER PICTURE X(3).
+           02  THORAO  PIC X(8).
+           02  FILLER PICTURE X(3).
+           02  TTRNSO  PIC X(10).
+           02  FILLER PICTURE X(3).
+           02  TOPERO  PIC X(9).
+           02  FILLER PICTURE X(3).
+           02  TTERMO  PIC X(8).
+           02  FILLER PICTURE X(3).
+           02  TMTRCO  PIC X(5).
+           02  FILLER PICTURE X(3).
+           02  TNOMEO  PIC X(30).
+           02  FILLER PICTURE X(3).
+           02  TCURSO  PIC X(30).
+           02  FILLER PICTURE X(3).
+           02  TFONEO  PIC X(15).
+           02  FILLER PICTURE X(3).
+           02  TENDRO  PIC X(30).
+           02  FILLER PICTURE X(3).
+           02  TMAILO  PIC X(30).
+           02  FILLER PICTURE X(3).
+           02  TCONFO  PIC X(27).
+           02  FILLER PICTURE X(3).
+           02  TRESPO  PIC X(1).
+           02  FILLER PICTURE X(3).
+           02  TMSGMO  PIC X(35).

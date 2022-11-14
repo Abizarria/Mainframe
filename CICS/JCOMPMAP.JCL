@@ -1,0 +1,63 @@
+//JCOMPMAP JOB IBMUSER,CLASS=C,MSGCLASS=H,MSGLEVEL=1,NOTIFY=ALU0407     00010000
+//*                                                                     00020000
+//DFHMAPCS PROC NAME=,                                                  00030000
+//         FONTP='ABS.FONTES',                                          00040001
+//         CICSP='SYS2.CICSTS13',                                       00050000
+//         A=,                         A=A FOR ALIGNED MAP              00060000
+//         RMODE=ANY                   24/ANY                           00070000
+//*------------------------------------------------------------------*  00080000
+//*        GENERATE SOURCE MAP                                       *  00090000
+//*------------------------------------------------------------------*  00100000
+//COPY     EXEC PGM=IEBGENER                                            00110000
+//SYSPRINT DD DUMMY                                                     00120000
+//SYSUT1   DD DISP=SHR,DSN=&FONTP..CICS(&NAME)                          00130000
+//SYSUT2   DD DSN=&&TEMPM,DISP=(,PASS),                                 00140000
+//            UNIT=SYSDA,SPACE=(400,(50,50)),                           00150000
+//            DCB=(RECFM=FB,LRECL=80,BLKSIZE=400)                       00160000
+//SYSIN    DD DUMMY                                                     00170000
+//*------------------------------------------------------------------*  00180000
+//*        ASSEMBLE THE MAP                                          *  00190000
+//*------------------------------------------------------------------*  00200000
+//ASMMAP   EXEC PGM=ASMA90,REGION=4M,                                   00210000
+//         PARM='SYSPARM(&A.MAP),DECK,NOOBJECT'                         00220000
+//SYSPRINT DD SYSOUT=*                                                  00230000
+//SYSLIB   DD DISP=SHR,DSN=SYS2.CICSTS13.SDFHCOB                        00240000
+//         DD DISP=SHR,DSN=SYS1.MODGEN                                  00250000
+//         DD DISP=SHR,DSN=&FONTP..CICS                                 00260000
+//         DD DISP=SHR,DSN=&CICSP..SDFHMAC                              00270000
+//SYSUT1   DD UNIT=SYSDA,SPACE=(CYL,(05,05))                            00280000
+//SYSUT2   DD UNIT=SYSDA,SPACE=(CYL,(05,05))                            00290000
+//SYSUT3   DD UNIT=SYSDA,SPACE=(CYL,(05,05))                            00300000
+//SYSPUNCH DD DSN=&&MAP,DISP=(,PASS),                                   00310000
+//            UNIT=SYSDA,SPACE=(400,(500,500)),                         00320000
+//            DCB=(RECFM=FB,LRECL=80,BLKSIZE=400)                       00330000
+//SYSIN    DD DSN=&&TEMPM,DISP=(OLD,PASS)                               00340000
+//*------------------------------------------------------------------*  00350000
+//*        LINKEDIT THE MAP                                          *  00360000
+//*------------------------------------------------------------------*  00370000
+//LINKMAP  EXEC PGM=IEWL,REGION=4M,COND=(4,LT,ASMMAP),                  00380000
+//         PARM='LIST,LET,XREF,RMODE(&RMODE)'                           00390000
+//SYSPRINT DD SYSOUT=*                                                  00400000
+//SYSLMOD  DD DISP=SHR,DSN=&CICSP..SDFHLOAD(&NAME)                      00410000
+//SYSUT1   DD UNIT=SYSDA,DCB=BLKSIZE=1024,                              00420000
+//            SPACE=(1024,(200,20))                                     00430000
+//SYSLIN   DD DSN=&&MAP,DISP=(OLD,DELETE,DELETE)                        00440000
+//*------------------------------------------------------------------*  00450000
+//*        GENERATE PROGRAM DUMMY SECTION                            *  00460000
+//*------------------------------------------------------------------*  00470000
+//ASMDSECT EXEC PGM=ASMA90,REGION=4M,                                   00480000
+//         PARM='SYSPARM(&A.DSECT),DECK,NOOBJECT'                       00490000
+//SYSPRINT DD SYSOUT=*                                                  00500000
+//SYSLIB   DD DISP=SHR,DSN=SYS1.MACLIB                                  00510000
+//         DD DISP=SHR,DSN=SYS1.MODGEN                                  00520000
+//         DD DISP=SHR,DSN=&FONTP..CICS                                 00530000
+//         DD DISP=SHR,DSN=&CICSP..SDFHMAC                              00540000
+//SYSUT1   DD UNIT=SYSDA,SPACE=(CYL,(05,05))                            00550000
+//SYSUT2   DD UNIT=SYSDA,SPACE=(CYL,(05,05))                            00560000
+//SYSUT3   DD UNIT=SYSDA,SPACE=(CYL,(05,05))                            00570000
+//SYSPUNCH DD DISP=OLD,DSN=ABS.FONTES.BOOKS(&NAME)                      00580001
+//SYSIN    DD DSN=&&TEMPM,DISP=(OLD,DELETE)                             00590000
+//*                                                                     00600000
+//         PEND                                                         00610000
+//*                                                                     00620000
+//MAPA003  EXEC DFHMAPCS,NAME=MAPLIST                                   00630004

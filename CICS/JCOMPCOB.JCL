@@ -1,0 +1,56 @@
+//JCOMPCOB JOB IBMUSERC,MSGCLASS=A,CLASS=C,NOTIFY=ALU0407               00010000
+//*                                                                     00020000
+//DFHCOBCL PROC NAME=,                                                  00030000
+//         FONTP='ABS.FONTES',                                          00040001
+//         CICSP='SYS2.CICSTS13',                                       00050000
+//         RENT=NORENT                                                  00060000
+//*                                                                     00070000
+//TRAN     EXEC PGM=DFHECP1$,REGION=2M,                                 00080000
+//         PARM=('COBOL2,SP')                                           00090000
+//STEPLIB  DD DSN=&CICSP..SDFHLOAD,DISP=SHR                             00100000
+//SYSPRINT DD SYSOUT=A                                                  00110000
+//SYSPUNCH DD DSN=&&SYSCIN,DISP=(,PASS),                                00120000
+//         UNIT=SYSDA,                                                  00130000
+//         SPACE=(400,(1000,200)),                                      00140000
+//         DCB=BLKSIZE=400                                              00150000
+//SYSIN    DD DSN=&FONTP..CICS(&NAME),DISP=SHR                          00160000
+//*                                                                     00170000
+//COB      EXEC PGM=IGYCRCTL,REGION=4M,                                 00180000
+//         COND=(5,LT,TRAN),                                            00190000
+//  PARM=('SOURCE,VBREF,APOST,XREF(FULL),TRUNC(OPT),NORENT,LIB',        00200000
+//       'NOOFFSET,MAP,NOSEQ,SIZE(1280K),OPT,NODYN,LIST')               00210000
+//STEPLIB  DD DISP=SHR,DSN=IGY.V2R1M0.SIGYCOMP                          00220000
+//SYSPRINT DD SYSOUT=A                                                  00230000
+//SYSLIB   DD DSN=&CICSP..SDFHCOB,DISP=SHR                              00240000
+//         DD DSN=&FONTP..BOOKS,DISP=SHR                                00250000
+//SYSLIN   DD DSN=&&LOADSET,DISP=(MOD,PASS),                            00260000
+//         UNIT=SYSDA,                                                  00270000
+//         SPACE=(CYL,(01,01))                                          00280000
+//SYSUT1   DD UNIT=SYSDA,SPACE=(CYL,(02,02))                            00290000
+//SYSUT2   DD UNIT=SYSDA,SPACE=(CYL,(02,02))                            00300000
+//SYSUT3   DD UNIT=SYSDA,SPACE=(CYL,(02,02))                            00310000
+//SYSUT4   DD UNIT=SYSDA,SPACE=(CYL,(02,02))                            00320000
+//SYSUT5   DD UNIT=SYSDA,SPACE=(CYL,(02,02))                            00330000
+//SYSUT6   DD UNIT=SYSDA,SPACE=(CYL,(02,02))                            00340000
+//SYSUT7   DD UNIT=SYSDA,SPACE=(CYL,(02,02))                            00350000
+//SYSIN    DD DSN=&&SYSCIN,DISP=(OLD,DELETE)                            00360000
+//*                                                                     00370000
+//LKED     EXEC PGM=IEWL,REGION=4M,                                     00380000
+//        COND=((5,LT,TRAN),(5,LT,COB)),                                00390000
+//        PARM='SIZE=(192K,60K),XREF,LIST,LET,&RENT,AMODE=31,RMODE=ANY' 00400000
+//SYSPRINT DD SYSOUT=A                                                  00410000
+//SYSLIB   DD DSN=&CICSP..SDFHLOAD,DISP=SHR                             00420000
+//         DD DSN=CEE.SCEELKED,DISP=SHR                                 00430000
+//         DD DSN=CSF.SCSFMOD0,DISP=SHR                                 00440000
+//         DD DSN=TCPIP.SEZATCP,DISP=SHR                                00450000
+//SYSUT1   DD UNIT=SYSDA,                                               00460000
+//         SPACE=(1024,(200,20)),                                       00470000
+//         DCB=BLKSIZE=1024                                             00480000
+//SYSLMOD  DD DSN=&CICSP..SDFHLOAD(&NAME),DISP=SHR                      00490000
+//SYSLIN   DD DSN=&CICSP..SDFHCOB(DFHEILIC),DISP=SHR                    00500000
+//         DD DSN=&&LOADSET,DISP=(OLD,DELETE)                           00510000
+//*        DD DDNAME=SYSIN                                              00520000
+//*                                                                     00530000
+//         PEND                                                         00540000
+//*                                                                     00550000
+//JCOMPCOB EXEC DFHCOBCL,NAME=PCICSMEN                                  00570000
