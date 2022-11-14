@@ -2,16 +2,17 @@
 //*                                                                     00020000
 //*SYSOUT   DD SYSOUT=*                                                 00030000
 //*                                                                     00040000
-//*-------------------------------------------------------*             00050004
-//* CRIA ARQUIVO VSAM - (O NOME NAO PODE SER DSN ALOCADO) *             00060004
-//*-------------------------------------------------------*             00070004
+//*----------------------------------------------------------*          00050008
+//* CRIA ARQUIVO VSAM - O NOME NAO PODE SER UM DSN ALOCADO   *          00060008
+//* SE O AQUIVO EXISTIR PRECISA ESTAR FECHADO NO CICS (CEMT) *          00061008
+//*----------------------------------------------------------*          00070008
 //DEDEF1   EXEC PGM=IDCAMS,REGION=1M                                    00080000
 //DDFILE   DD   UNIT=3390,VOL=SER=PR39D7,DISP=SHR                       00090000
 //SYSPRINT DD SYSOUT=*                                                  00100000
 //SYSIN    DD *                                                         00110000
-   DELETE      (ABS.VSAM.CADALU.CLUSTER)                                00120003
+   DELETE      (ABS.VSAM.CADTST.CLUSTER)                                00120010
    DEFINE CLUSTER -                                                     00130000
-          (NAME(ABS.VSAM.CADALU.CLUSTER) -                              00140003
+          (NAME(ABS.VSAM.CADTST.CLUSTER) -                              00140009
            RECORDSIZE(135 135) -                                        00150001
            VOLUME(PR39D7)    -                                          00160000
            KEY(5 0)          -                                          00170000
@@ -24,7 +25,7 @@
            IMBED -                                                      00240000
            REPLICATE) -                                                 00250000
          DATA -                                                         00260000
-         (NAME(ABS.VSAM.CADALU.DATA)) -                                 00270003
+         (NAME(ABS.VSAM.CADTST.DATA)) -                                 00270009
          INDEX -                                                        00280000
-         (NAME(ABS.VSAM.CADALU.INDEX))                                  00290003
+         (NAME(ABS.VSAM.CADTST.INDEX))                                  00290009
 //*                                                                     00300000
