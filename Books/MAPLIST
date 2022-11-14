@@ -1,0 +1,75 @@
+       01  CABLISTI.
+           02  FILLER PIC X(12).
+           02  TDATAL    COMP  PIC  S9(4).
+           02  TDATAF    PICTURE X.
+           02  FILLER REDEFINES TDATAF.
+             03 TDATAA    PICTURE X.
+           02  TDATAI  PIC X(10).
+           02  THORAL    COMP  PIC  S9(4).
+           02  THORAF    PICTURE X.
+           02  FILLER REDEFINES THORAF.
+             03 THORAA    PICTURE X.
+           02  THORAI  PIC X(8).
+           02  TTRNSL    COMP  PIC  S9(4).
+           02  TTRNSF    PICTURE X.
+           02  FILLER REDEFINES TTRNSF.
+             03 TTRNSA    PICTURE X.
+           02  TTRNSI  PIC X(10).
+           02  TOPERL    COMP  PIC  S9(4).
+           02  TOPERF    PICTURE X.
+           02  FILLER REDEFINES TOPERF.
+             03 TOPERA    PICTURE X.
+           02  TOPERI  PIC X(9).
+           02  TTERML    COMP  PIC  S9(4).
+           02  TTERMF    PICTURE X.
+           02  FILLER REDEFINES TTERMF.
+             03 TTERMA    PICTURE X.
+           02  TTERMI  PIC X(8).
+           02  THEADL    COMP  PIC  S9(4).
+           02  THEADF    PICTURE X.
+           02  FILLER REDEFINES THEADF.
+             03 THEADA    PICTURE X.
+           02  THEADI  PIC X(78).
+       01  CABLISTO REDEFINES CABLISTI.
+           02  FILLER PIC X(12).
+           02  FILLER PICTURE X(3).
+           02  TDATAO  PIC X(10).
+           02  FILLER PICTURE X(3).
+           02  THORAO  PIC X(8).
+           02  FILLER PICTURE X(3).
+           02  TTRNSO  PIC X(10).
+           02  FILLER PICTURE X(3).
+           02  TOPERO  PIC X(9).
+           02  FILLER PICTURE X(3).
+           02  TTERMO  PIC X(8).
+           02  FILLER PICTURE X(3).
+           02  THEADO  PIC X(78).
+       01  DETLISTI REDEFINES CABLISTI.
+           02  FILLER PIC X(12).
+           02  TINFOL    COMP  PIC  S9(4).
+           02  TINFOF    PICTURE X.
+           02  FILLER REDEFINES TINFOF.
+             03 TINFOA    PICTURE X.
+           02  TINFOI  PIC X(78).
+       01  DETLISTO REDEFINES DETLISTI.
+           02  FILLER PIC X(12).
+           02  FILLER PICTURE X(3).
+           02  TINFOO  PIC X(78).
+       01  RODLISTI REDEFINES CABLISTI.
+           02  FILLER PIC X(12).
+           02  TMSGML    COMP  PIC  S9(4).
+           02  TMSGMF    PICTURE X.
+           02  FILLER REDEFINES TMSGMF.
+             03 TMSGMA    PICTURE X.
+           02  TMSGMI  PIC X(60).
+           02  TPCURL    COMP  PIC  S9(4).
+           02  TPCURF    PICTURE X.
+           02  FILLER REDEFINES TPCURF.
+             03 TPCURA    PICTURE X.
+           02  TPCURI  PIC X(1).
+       01  RODLISTO REDEFINES RODLISTI.
+           02  FILLER PIC X(12).
+           02  FILLER PICTURE X(3).
+           02  TMSGMO  PIC X(60).
+           02  FILLER PICTURE X(3).
+           02  TPCURO  PIC X(1).
