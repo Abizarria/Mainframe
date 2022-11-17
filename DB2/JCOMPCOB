@@ -53,5 +53,5 @@
 //*                                                                     00530000
 //         PEND                                                         00540000
 //*                                                                     00550000
-//JCOMPCOB EXEC DFHCOBCL,NAME=PRGDB2M                                   00560011
+//JCOMPCOB EXEC DFHCOBCL,NAME=PRGDB2I                                   00560012
 //*                                                                     00570008

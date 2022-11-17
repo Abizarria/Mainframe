@@ -60,5 +60,5 @@
 //*                                                                     00600000
 //         PEND                                                         00610000
 //*                                                                     00620000
-//MAPA002  EXEC DFHMAPCS,NAME=MAPDB2O                                   00630006
+//MAPA002  EXEC DFHMAPCS,NAME=MAPDB2C                                   00630012
 //*                                                                     00640005
