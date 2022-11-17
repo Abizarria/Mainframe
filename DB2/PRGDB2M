@@ -29,7 +29,7 @@
        77  WS-DATA         PIC  X(08).                                  00290001
        77  WS-HORA         PIC  X(05).                                  00300001
        77  WS-MSGM         PIC  X(20).                                  00310002
-       77  WS-FASE         PIC  9(01).                                  00320000
+       77  WS-FASE         PIC  9(01).                                  00320003
                                                                         00330000
        COPY   DFHAID.                                                   00340000
        COPY   DFHBMSCA.                                                 00350000
@@ -40,126 +40,132 @@
        01 DFHCOMMAREA.                                                  00400000
           03  LK-FASE      PIC X(01).                                   00410000
                                                                         00420000
-       PROCEDURE            DIVISION.                                   00430000
+       PROCEDURE           DIVISION.                                    00430003
                                                                         00440000
        000-INI-PROG.                                                    00450000
-           IF  EIBCALEN   =   0                                         00460000
-               PERFORM   100-INI-MAPA                                   00470000
+           IF  EIBCALEN    =   0                                        00460003
+               GO  TO      100-INI-MAPA                                 00470003
            ELSE                                                         00480000
-               PERFORM   200-REC-TELA                                   00490000
+               PERFORM     200-REC-TELA                                 00490003
            END-IF.                                                      00500000
                                                                         00510000
        100-INI-MAPA.                                                    00520000
-           MOVE     ZEROS     TO  TNOPCO                                00530000
-           MOVE     DFHBMFSE  TO  TNOPCA                                00540000
-                                                                        00550000
-           MOVE     -1        TO  TNOPCL                                00560000
-           MOVE     0         TO  WS-FASE                               00570000
-                                                                        00580000
-           EXEC     CICS  SEND     MAP      ('MSGDB2M')                 00590001
-                                   MAPSET   ('MAPDB2M')                 00600001
-                          FROM              (MSGDB2MO)                  00610001
-                          ERASE                                         00620001
-           END-EXEC                                                     00630001
-                                                                        00640001
-           PERFORM  120-ATU-TELA.                                       00650000
-                                                                        00660000
-       110-ATU-DATA.                                                    00670000
-           EXEC     CICS      ASKTIME                                   00680000
-                              ABSTIME    (WS-TIME)                      00690000
-           END-EXEC                                                     00700000
-                                                                        00710000
-           EXEC     CICS      FORMATTIME                                00720000
-                              ABSTIME    (WS-TIME)                      00730000
-                              DATESEP    ('/')                          00740000
-                              DDMMYYYY   (WS-DATA)                      00750000
-                              TIMESEP    (':')                          00760000
-                              TIME       (WS-HORA)                      00770000
-           END-EXEC                                                     00780000
-                                                                        00790000
-           MOVE     WS-DATA   TO  TDATAO                                00800000
-           MOVE     WS-HORA   TO  THORAO                                00810000
-           MOVE     DFHBMPRF  TO  TDATAA  THORAA.                       00820000
-                                                                        00830000
-       120-ATU-TELA.                                                    00840000
-           PERFORM  110-ATU-DATA                                        00850000
-                                                                        00860000
-           MOVE     EIBTRMID  TO  TTERMO                                00870000
-           MOVE     EIBTRNID  TO  TTRNSO                                00880000
-           MOVE     DFHBMPRF  TO  TTRNSA  TTERMA                        00890000
-                                                                        00900000
-           EXEC     CICS      SEND     MAP       ('MAPDB2M')            00910000
-                                       MAPSET    ('MAPDB2M')            00920000
-                              FROM               (MAPDB2MO)             00930000
-                              ERASE    CURSOR                           00940000
-           END-EXEC                                                     00950000
-                                                                        00960000
-           EXEC     CICS      SEND     PAGE       END-EXEC              00970001
-                                                                        00980001
-           EXEC     CICS      RETURN   COMMAREA  (WS-FASE)              00990000
-                                       TRANSID   ('DB2M')               01000000
-           END-EXEC.                                                    01010000
-                                                                        01020000
-       200-REC-TELA.                                                    01030000
-           EXEC     CICS      RECEIVE  MAP       ('MAPDB2M')            01040000
-                                       MAPSET    ('MAPDB2M')            01050000
-                              INTO               (MAPDB2MI)             01060000
-           END-EXEC                                                     01070000
-                                                                        01080000
-           IF  EIBAID     =   DFHPF3                                    01090000
-               PERFORM   900-FIM-PROG.                                  01100000
-                                                                        01110000
-           MOVE     LK-FASE   TO  WS-FASE                               01120000
-                                                                        01130000
-           IF  WS-FASE    =   1                                         01140000
-               PERFORM   100-INI-MAPA.                                  01150000
-                                                                        01160000
-           EVALUATE  TNOPCI                                             01170000
-             WHEN    1                                                  01180000
-                     EXEC    CICS  XCTL                                 01190000
-                                   PROGRAM ('PRGDB2I')                  01200001
-                     END-EXEC                                           01210000
-             WHEN    2                                                  01220000
-                     EXEC    CICS  XCTL                                 01230000
-                                   PROGRAM ('PRGDB2C')                  01240001
-                     END-EXEC                                           01250000
-             WHEN    3                                                  01260000
-                     EXEC    CICS  XCTL                                 01270000
-                                   PROGRAM ('PRGDB2A')                  01280001
-                     END-EXEC                                           01290000
-             WHEN    4                                                  01300000
-                     EXEC    CICS  XCTL                                 01310000
-                                   PROGRAM ('PRGDB2E')                  01320001
-                     END-EXEC                                           01330000
-             WHEN    5                                                  01340000
-                     EXEC    CICS  XCTL                                 01350000
-                                   PROGRAM ('PRGDB2R')                  01360001
-                     END-EXEC                                           01370000
-             WHEN    6                                                  01380000
-                     PERFORM  900-FIM-PROG                              01390000
-             WHEN    OTHER                                              01400000
-                     MOVE     SPACES    TO  TPCURO                      01410001
-                     MOVE     DFHBMPRF  TO  TPCURA                      01420001
-                                                                        01430001
-                     MOVE     -1        TO  TPCURL                      01440001
-                     MOVE     1         TO  WS-FASE                     01450001
-                                                                        01460001
-                     EXEC     CICS  SEND     MAP      ('ERRDB2M')       01470001
-                                             MAPSET   ('MAPDB2M')       01480001
-                                    FROM              (ERRDB2MO)        01490001
-                                    ERASE                               01500001
-                     END-EXEC                                           01510001
-                                                                        01520001
-                     PERFORM  120-ATU-TELA                              01530000
-           END-EVALUATE.                                                01540000
-                                                                        01550000
-       900-FIM-PROG.                                                    01560000
-           MOVE    'PROGRAMA ENCERRADO' TO  WS-MSGM                     01570000
-                                                                        01580000
-           EXEC     CICS      SEND                                      01590000
-                              FROM     (WS-MSGM)                        01600000
-                              ERASE                                     01610000
-           END-EXEC                                                     01620000
-                                                                        01630000
-           EXEC     CICS      RETURN                                    01640000
-           END-EXEC.                                                    01650000
+           MOVE     ZEROS     TO   WS-FASE.                             00530003
+                                                                        00540003
+       110-ATU-TELA.                                                    00550003
+           PERFORM  120-ATU-DATA                                        00560003
+                                                                        00570003
+           MOVE     EIBTRMID  TO   TTERMO                               00580003
+           MOVE     EIBTRNID  TO   TTRNSO                               00590003
+           MOVE     DFHBMPRF  TO   TTRNSA   TTERMA                      00600003
+                                                                        00610003
+           EXEC     CICS  SEND     MAP      ('MAPDB2M')                 00620003
+                                   MAPSET   ('MAPDB2M')                 00630003
+                          FROM              (MAPDB2MO)                  00640003
+                          ERASE    CURSOR                               00650003
+           END-EXEC                                                     00660003
+                                                                        00670003
+           PERFORM  130-EXB-MSGM                                        00680003
+                                                                        00690003
+           EXEC     CICS  SEND     PAGE     END-EXEC                    00700003
+                                                                        00710003
+           EXEC     CICS  RETURN   COMMAREA (WS-FASE)                   00720003
+                                   TRANSID  ('DB2M')                    00730003
+           END-EXEC.                                                    00740003
+                                                                        00750003
+       120-ATU-DATA.                                                    00760003
+           EXEC     CICS      ASKTIME                                   00770003
+                              ABSTIME    (WS-TIME)                      00780003
+           END-EXEC                                                     00790003
+                                                                        00800003
+           EXEC     CICS      FORMATTIME                                00810003
+                              ABSTIME    (WS-TIME)                      00820003
+                              DATESEP    ('/')                          00830003
+                              DDMMYY     (WS-DATA)                      00840003
+                              TIMESEP    (':')                          00850003
+                              TIME       (WS-HORA)                      00860003
+           END-EXEC                                                     00870003
+                                                                        00880003
+           MOVE     WS-DATA   TO   TDATAO                               00890003
+           MOVE     WS-HORA   TO   THORAO                               00900003
+           MOVE     DFHBMPRF  TO   TDATAA   THORAA.                     00910003
+                                                                        00920003
+       130-EXB-MSGM.                                                    00930003
+           EVALUATE WS-FASE                                             00940003
+             WHEN   0                                                   00950003
+                    MOVE     ZEROS     TO   TNOPCO                      00960010
+                    MOVE     DFHBMFSE  TO   TNOPCA                      00970010
+                    MOVE     -1        TO   TNOPCL                      00990010
+                                                                        01000003
+                    EXEC     CICS  SEND     MAP     ('MSGDB2M')         01010010
+                                            MAPSET  ('MAPDB2M')         01020010
+                                   FROM             (MSGDB2MO)          01030010
+                                   CURSOR                               01040010
+                    END-EXEC                                            01050003
+             WHEN   1                                                   01060003
+                    MOVE     SPACES    TO   TPCURO                      01070010
+                    MOVE     DFHBMPRF  TO   TPCURA                      01080003
+                    MOVE     -1        TO   TPCURL                      01100003
+                                                                        01110003
+                    EXEC     CICS  SEND     MAP     ('ERRDB2M')         01120003
+                                            MAPSET  ('MAPDB2M')         01130003
+                                   FROM             (ERRDB2MO)          01140003
+                                   CURSOR                               01150003
+                    END-EXEC                                            01160003
+                                                                        01170005
+                    EXEC     CICS  SEND     CONTROL                     01180006
+                                   ALARM                                01190006
+                    END-EXEC                                            01200006
+           END-EVALUATE.                                                01210004
+                                                                        01220003
+       200-REC-TELA.                                                    01230000
+           EXEC     CICS  RECEIVE  MAP      ('MSGDB2M')                 01260003
+                                   MAPSET   ('MAPDB2M')                 01270003
+                          INTO              (MSGDB2MI)                  01280003
+           END-EXEC                                                     01290000
+                                                                        01300000
+           IF  EIBAID     =   DFHPF3                                    01310000
+               PERFORM        900-FIM-PROG.                             01320003
+                                                                        01330000
+           MOVE     LK-FASE   TO   WS-FASE                              01340003
+                                                                        01350000
+           IF  WS-FASE    =   1                                         01360003
+               GO  TO         100-INI-MAPA.                             01370010
+                                                                        01380000
+           EVALUATE TNOPCI                                              01390003
+             WHEN   1                                                   01400003
+                    EXEC     CICS  XCTL                                 01410003
+                                   PROGRAM  ('PRGDB2I')                 01420010
+                    END-EXEC                                            01430003
+             WHEN   2                                                   01440003
+                    EXEC     CICS  XCTL                                 01450003
+                                   PROGRAM  ('PRGDB2C')                 01460010
+                    END-EXEC                                            01470003
+             WHEN   3                                                   01480003
+                    EXEC     CICS  XCTL                                 01490010
+                                   PROGRAM  ('PRGDB2A')                 01500010
+                    END-EXEC                                            01510003
+             WHEN   4                                                   01520003
+                    EXEC     CICS  XCTL                                 01530010
+                                   PROGRAM  ('PRGDB2E')                 01540010
+                    END-EXEC                                            01550003
+             WHEN   5                                                   01560003
+                    EXEC     CICS  XCTL                                 01570010
+                                   PROGRAM  ('PRGDB2R')                 01580010
+                    END-EXEC                                            01590003
+             WHEN   6                                                   01600003
+                    PERFORM  900-FIM-PROG                               01610003
+             WHEN   OTHER                                               01620003
+                    MOVE     1         TO    WS-FASE                    01630010
+                    PERFORM  110-ATU-TELA                               01640003
+           END-EVALUATE.                                                01650000
+                                                                        01660000
+       900-FIM-PROG.                                                    01670000
+           MOVE    'PROGRAMA ENCERRADO' TO   WS-MSGM                    01680010
+                                                                        01690000
+           EXEC     CICS  SEND                                          01700010
+                          FROM   (WS-MSGM)                              01710010
+                          ERASE                                         01720010
+           END-EXEC                                                     01730000
+                                                                        01740000
+           EXEC     CICS  RETURN  END-EXEC.                             01750010

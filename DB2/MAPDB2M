@@ -4,45 +4,45 @@ MAPDB2M DFHMSD TYPE=MAP,                                               X00010000
                CTRL=(FREEKB,FRSET),                                    X00040000
                MAPATTS=COLOR,                                          X00050000
                LANG=COBOL                                               00060000
-*---------------------------------------------------------------------- 00070000
+*=====================================================================  00070010
 MAPDB2M DFHMDI SIZE=(24,80),LINE=01,COLUMN=01                           00080005
-*-------------                                                          00090000
+*---------------------------------------------------------------------  00090010
         DFHMDF POS=(02,01),LENGTH=05,ATTRB=PROT,                       X00100003
                COLOR=YELLOW,                                           X00110000
                INITIAL='DATA:'                                          00120000
                                                                         00130000
 TDATA   DFHMDF POS=(02,07),LENGTH=08,ATTRB=PROT,                       X00140003
                COLOR=YELLOW                                             00150000
-*-------------                                                          00160000
+                                                                        00160010
         DFHMDF POS=(02,22),LENGTH=40,ATTRB=PROT,                       X00170000
                COLOR=YELLOW,                                           X00180000
                INITIAL='FUTURE SCHOOL - CADASTRO DE ALUNOS (DB2)'       00190000
-*-------------                                                          00200000
+                                                                        00200010
         DFHMDF POS=(02,68),LENGTH=05,ATTRB=PROT,                       X00210005
                COLOR=YELLOW,                                           X00220000
                INITIAL='HORA:'                                          00230000
                                                                         00240000
 THORA   DFHMDF POS=(02,74),LENGTH=05,ATTRB=PROT,                       X00250005
                COLOR=YELLOW                                             00260000
-*-------------                                                          00270000
+*---------------------------------------------------------------------  00270010
         DFHMDF POS=(04,01),LENGTH=06,ATTRB=PROT,                       X00280003
                COLOR=YELLOW,                                           X00290000
                INITIAL='TRANS:'                                         00300000
                                                                         00310000
 TTRNS   DFHMDF POS=(04,08),LENGTH=04,ATTRB=PROT,                       X00320003
                COLOR=YELLOW                                             00330000
-*-------------                                                          00340000
+                                                                        00340010
         DFHMDF POS=(04,31),LENGTH=18,ATTRB=PROT,                       X00350003
                COLOR=TURQUOISE,                                        X00360000
                INITIAL='> MENU PRINCIPAL <'                             00370000
-*-------------                                                          00380000
+                                                                        00380010
         DFHMDF POS=(04,68),LENGTH=05,ATTRB=PROT,                       X00390005
                COLOR=YELLOW,                                           X00400000
                INITIAL='TERM:'                                          00410000
                                                                         00420000
 TTERM   DFHMDF POS=(04,74),LENGTH=05,ATTRB=PROT,                       X00430005
                COLOR=YELLOW                                             00440000
-*-------------                                                          00450000
+*---------------------------------------------------------------------  00450010
         DFHMDF POS=(08,33),LENGTH=12,ATTRB=PROT,                       X00460003
                COLOR=GREEN,                                            X00470000
                INITIAL='1 - INCLUSAO'                                   00480000
@@ -66,39 +66,35 @@ TTERM   DFHMDF POS=(04,74),LENGTH=05,ATTRB=PROT,                       X00430005
         DFHMDF POS=(18,33),LENGTH=12,ATTRB=PROT,                       X00660003
                COLOR=GREEN,                                            X00670000
                INITIAL='6 - FINALIZA'                                   00680000
-*-------------                                                          00690000
+*---------------------------------------------------------------------  00690010
         DFHMDF POS=(23,01),LENGTH=11,ATTRB=PROT,                       X00700003
                COLOR=YELLOW,                                           X00710001
                INITIAL='MENSAGEM ->'                                    00720000
-                                                                        00730000
-        DFHMDF POS=(23,76),LENGTH=03,ATTRB=PROT,                       X00740003
-               COLOR=YELLOW,                                           X00750001
-               INITIAL='ABS'                                            00760000
-*---------------------------------------------------------------------- 00770000
-MSGDB2M DFHMDI SIZE=(01,62),LINE=23,COLUMN=13                           00780005
-*-------------                                                          00790000
-        DFHMDF POS=(01,01),LENGTH=37,ATTRB=PROT,                       X00800000
-               COLOR=RED,                                              X00810001
-               INITIAL='INFORME O NUMERO DA OPCAO DESEJADA ->'          00820000
+*=====================================================================  00730010
+MSGDB2M DFHMDI SIZE=(01,62),LINE=23,COLUMN=13                           00740005
+*---------------------------------------------------------------------  00750010
+        DFHMDF POS=(01,01),LENGTH=37,ATTRB=PROT,                       X00760000
+               COLOR=RED,                                              X00770001
+               INITIAL='INFORME O NUMERO DA OPCAO DESEJADA ->'          00780000
+                                                                        00790000
+TNOPC   DFHMDF POS=(01,39),LENGTH=01,ATTRB=(UNPROT,IC),                X00800000
+               COLOR=RED,                                              X00810005
+               INITIAL='0'                                              00820000
                                                                         00830000
-TNOPC   DFHMDF POS=(01,39),LENGTH=01,ATTRB=(UNPROT,IC),                X00840000
-               COLOR=RED,                                              X00850005
-               INITIAL='0'                                              00860000
-                                                                        00870000
-        DFHMDF POS=(01,41),ATTRB=ASKIP                                  00880000
-*---------------------------------------------------------------------  00890000
-ERRDB2M DFHMDI SIZE=(01,62),LINE=23,COLUMN=13                           00900005
-*-------------                                                          00910000
-        DFHMDF POS=(01,01),LENGTH=15,ATTRB=PROT,                       X00920000
+        DFHMDF POS=(01,41),ATTRB=ASKIP                                  00840000
+*=====================================================================  00850010
+ERRDB2M DFHMDI SIZE=(01,67),LINE=23,COLUMN=13                           00860009
+*---------------------------------------------------------------------  00870010
+        DFHMDF POS=(01,01),LENGTH=23,ATTRB=PROT,                       X00880006
+               COLOR=RED,                                              X00890000
+               INITIAL='OPCAO INVALIDA, INFORME'                        00900006
+                                                                        00910000
+        DFHMDF POS=(01,25),LENGTH=24,ATTRB=PROT,                       X00920006
                COLOR=RED,                                              X00930000
-               INITIAL='OPCAO INVALIDA,'                                00940000
+               INITIAL='APENAS NUMEROS DE 1 A 6!'                       00940006
                                                                         00950000
-        DFHMDF POS=(01,17),LENGTH=32,ATTRB=PROT,                       X00960000
-               COLOR=RED,                                              X00970000
-               INITIAL='INFORME APENAS NUMEROS DE 1 A 6!'               00980000
-                                                                        00990000
-TPCUR   DFHMDF POS=(01,60),LENGTH=01,ATTRB=PROT,                       X01000005
-               INITIAL=' '                                              01010000
-*---------------------------------------------------------------------  01020000
-        DFHMSD TYPE=FINAL                                               01030000
-               END                                                      01040000
+TPCUR   DFHMDF POS=(01,66),LENGTH=01,ATTRB=PROT,                       X00960009
+               INITIAL=' '                                              00970000
+*=====================================================================  00980010
+        DFHMSD TYPE=FINAL                                               00990000
+               END                                                      01000000
