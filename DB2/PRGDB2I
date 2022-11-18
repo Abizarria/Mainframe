@@ -82,7 +82,7 @@
        01  DFHCOMMAREA.                                                 00820000
            03  LK-FASE     PIC  9(01).                                  00830000
                                                                         00840000
-       PROCEDURE       DIVISION.                                        00850000
+       PROCEDURE           DIVISION.                                    00850000
                                                                         00860000
        000-INI-PROG.                                                    00870000
            IF  EIBCALEN   =   0                                         00880000
@@ -151,7 +151,7 @@
            MOVE     DFHBMPRF  TO  TDATAA   THORAA.                      01510001
                                                                         01520000
        130-EXB-MSGM.                                                    01530031
-           MOVE    'INCLUSAO' TO  TOPR1O                                01540058
+           MOVE    'INCLUSAO' TO   TOPR1O                               01540058
            MOVE     SPACES    TO   TRESPO                               01550058
            MOVE     DFHBMFSE  TO   TRESPA                               01560058
            MOVE     DFHBMPRF  TO   TOPR2A                               01570049
