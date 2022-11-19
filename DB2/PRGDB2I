@@ -62,21 +62,21 @@
            END-IF.                                                      00630000
                                                                         00640000
        100-INI-MAPA.                                                    00650000
-           MOVE     1         TO  WS-FASE                               00660041
-           MOVE     0         TO  TMTRCO                                00670041
-           MOVE    -1         TO  TMTRCL                                00680036
-           MOVE     DFHBMFSE  TO  TMTRCA                                00690036
-                                                                        00700036
-           MOVE     SPACES    TO  TNOMEO   TCURSO   TTURMO              00710000
-                                  TENDRO   TBAIRO   TCIDAO              00720000
-                                  TESTDO   TMAILO   TFONEO              00730036
+           MOVE     0         TO   TMTRCO                               00670041
+           MOVE     SPACES    TO   TNOMEO    TCURSO    TTURMO           00710000
+                                   TENDRO    TBAIRO    TCIDAO           00720000
+                                   TESTDO    TMAILO    TFONEO           00730036
                                                                         00740036
-           MOVE    'INFORME O NUMERO DA MATRICULA'  TO  TMSGMO.         00750036
+           MOVE    'INFORME O NUMERO DA MATRICULA' TO  TMSGMO           00750036
+                                                                        00700036
+           MOVE     DFHBMFSE  TO   TMTRCA                               00690036
+           MOVE    -1         TO   TMTRCL                               00680036
+           MOVE     1         TO   WS-FASE.                             00660041
                                                                         00760036
        110-BLQ-ENTR.                                                    00770049
-           MOVE     DFHBMPRF  TO  TNOMEA   TCURSA   TTURMA              00780036
-                                  TENDRA   TBAIRA   TCIDAA              00790036
-                                  TESTDA   TMAILA   TFONEA.             00800036
+           MOVE     DFHBMPRF  TO   TNOMEA    TCURSA    TTURMA           00780036
+                                   TENDRA    TBAIRA    TCIDAA           00790036
+                                   TESTDA    TMAILA    TFONEA.          00800036
        120-ATU-DATA.                                                    00810036
            EXEC     CICS  ASKTIME                                       00820036
                           ABSTIME (WS-TIME)                             00830036
@@ -90,83 +90,83 @@
                           TIME    (WS-HORA)                             00910036
            END-EXEC                                                     00920036
                                                                         00930036
-           MOVE     WS-DATA   TO  TDATAO                                00940036
-           MOVE     WS-HORA   TO  THORAO                                00950036
-           MOVE     DFHBMPRF  TO  TDATAA   THORAA.                      00960036
+           MOVE     WS-DATA   TO   TDATAO                               00940036
+           MOVE     WS-HORA   TO   THORAO                               00950036
+           MOVE     DFHBMPRF  TO   TDATAA    THORAA.                    00960036
                                                                         00970036
        130-ATU-TELA.                                                    00980036
-           MOVE    'INCLUSAO' TO  TOPR1O                                00990000
-           MOVE     EIBTRNID  TO  TTRNSO                                01000000
-           MOVE     EIBTRMID  TO  TTERMO                                01010000
+           MOVE    'INCLUSAO' TO   TOPR1O                               00990000
+           MOVE     EIBTRNID  TO   TTRNSO                               01000000
+           MOVE     EIBTRMID  TO   TTERMO                               01010000
                                                                         01020000
-           MOVE     DFHBMPRF  TO  TOPR1A   TTRNSA                       01030000
-                                  TTERMA   TMSGMA                       01040000
+           MOVE     DFHBMPRF  TO   TOPR1A    TTRNSA                     01030000
+                                   TTERMA    TMSGMA                     01040000
                                                                         01050000
-           EXEC     CICS  SEND    MAP      ('MAPDB2C')                  01060000
-                                  MAPSET   ('MAPDB2C')                  01070000
-                          FROM             (MAPDB2CO)                   01080000
-                          ERASE   CURSOR                                01090000
+           EXEC     CICS  SEND     MAP      ('MAPDB2C')                 01060000
+                                   MAPSET   ('MAPDB2C')                 01070000
+                          FROM              (MAPDB2CO)                  01080000
+                          ERASE    CURSOR                               01090000
            END-EXEC                                                     01100000
                                                                         01110000
            IF  WS-FASE    =   3                                         01120033
                PERFORM        140-CONF-INC.                             01130036
                                                                         01140033
-           EXEC     CICS  SEND    PAGE      END-EXEC                    01150035
+           EXEC     CICS  SEND     PAGE      END-EXEC                   01150035
                                                                         01160035
-           EXEC     CICS  RETURN  COMMAREA (WS-FASE)                    01170035
-                                  TRANSID  ('DB2I')                     01180035
+           EXEC     CICS  RETURN   COMMAREA (WS-FASE)                   01170035
+                                   TRANSID  ('DB2I')                    01180035
            END-EXEC.                                                    01190035
                                                                         01200035
        140-CONF-INC.                                                    01210036
-           MOVE    'INCLUSAO' TO  TOPR2O                                01220036
-           MOVE     SPACES    TO  TRESPO                                01230036
-           MOVE     DFHBMFSE  TO  TRESPA                                01240036
-           MOVE     -1        TO  TRESPL                                01250036
+           MOVE    'INCLUSAO' TO   TOPR2O                               01220036
+           MOVE     SPACES    TO   TRESPO                               01230036
+           MOVE     DFHBMFSE  TO   TRESPA                               01240036
+           MOVE     -1        TO   TRESPL                               01250036
                                                                         01260036
-           EXEC     CICS  SEND    MAP      ('RSPDB2C')                  01270036
-                                  MAPSET   ('MAPDB2C')                  01280036
-                          FROM             (MAPDB2CO)                   01290036
+           EXEC     CICS  SEND     MAP      ('RSPDB2C')                 01270036
+                                   MAPSET   ('MAPDB2C')                 01280036
+                          FROM              (MAPDB2CO)                  01290036
                           CURSOR                                        01300036
            END-EXEC.                                                    01310036
                                                                         01320000
        200-REC-TELA.                                                    01330000
-           EXEC     CICS  RECEIVE MAP      ('MAPDB2C')                  01340000
-                                  MAPSET   ('MAPDB2C')                  01350000
-                          INTO             (MAPDB2CI)                   01360000
+           EXEC     CICS  RECEIVE  MAP      ('MAPDB2C')                 01340000
+                                   MAPSET   ('MAPDB2C')                 01350000
+                          INTO              (MAPDB2CI)                  01360000
            END-EXEC                                                     01370000
                                                                         01380000
-           MOVE     LK-FASE   TO  WS-FASE                               01390027
+           MOVE     LK-FASE   TO   WS-FASE                              01390027
                                                                         01400027
-           IF  EIBAID    =    DFHPF3                                    01410000
-               IF  WS-FASE    >   1                                     01420040
-                   MOVE    0  TO  WS-FASE                               01430030
+           IF  EIBAID    =    DFHPF3    AND  WS-FASE  >  0              01410000
+               IF  WS-FASE    >    1                                    01420040
+                   MOVE    0       TO   WS-FASE                         01430030
                ELSE                                                     01440030
-                   EXEC    CICS   XCTL                                  01450030
-                                  PROGRAM  ('PRGDB2M')                  01460030
+                   EXEC    CICS    XCTL                                 01450030
+                                   PROGRAM  ('PRGDB2M')                 01460030
                    END-EXEC                                             01470030
                END-IF.                                                  01480030
                                                                         01490027
            EVALUATE WS-FASE                                             01500000
-             WHEN   0                                                   01510000
+              WHEN  0                                                   01510000
                     GO  TO    100-INI-MAPA                              01520038
-             WHEN   1                                                   01530000
-                    GO  TO    210-VER-MTRC                              01540038
-             WHEN   2                                                   01550000
-                    GO  TO    220-VER-ENTR                              01560037
-             WHEN   3                                                   01570000
-                    GO  TO    230-VER-RESP                              01581059
+              WHEN  1                                                   01530000
+                    GO  TO    210-CHK-MTRC                              01540038
+              WHEN  2                                                   01550000
+                    GO  TO    220-CHK-ENTR                              01560037
+              WHEN  3                                                   01570000
+                    GO  TO    230-CHK-RESP                              01581059
            END-EVALUATE.                                                01590000
                                                                         01600000
-       210-VER-MTRC.                                                    01610036
-           EXEC     CICS  BIF     DEEDIT                                01620021
-                          FIELD  (TMTRCI)                               01630021
-                          LENGTH (05)                                   01640043
+       210-CHK-MTRC.                                                    01610036
+           EXEC     CICS  BIF      DEEDIT                               01620021
+                          FIELD   (TMTRCI)                              01630021
+                          LENGTH  (5)                                   01640043
            END-EXEC                                                     01650021
                                                                         01660021
-           IF  TMTRCI   =     '00000'  OR                               01670045
-               TMTRCI   NOT  NUMERIC                                    01671045
-               MOVE     1         TO   WS-IMSG                          01680049
-               GO  TO   240-MSGM-ERR.                                   01690037
+           IF  TMTRCI   NOT   NUMERIC   OR                              01670045
+               TMTRCI   =     '00000'                                   01671045
+               MOVE     1         TO    WS-IMSG                         01680049
+               GO  TO   250-MSGM-ERR.                                   01690037
                                                                         01700000
       *    EXEC    SQL  SELECT  *  FROM  DBABS1.TABALU                  01710000
       *                 WHERE   MTR_ALU  =  TMTRCI                      01720000
@@ -183,12 +183,12 @@
                MOVE     TEL-ALU   TO   TFONEO                           01830000
                                                                         01840000
                MOVE     2         TO   WS-IMSG                          01850000
-               GO  TO   240-MSGM-ERR.                                   01870037
+               GO  TO   250-MSGM-ERR.                                   01870037
                                                                         01880000
-           MOVE     2         TO  WS-FASE.                              01883062
+           MOVE     2        TO   WS-FASE.                              01883062
                                                                         01970000
-       220-VER-ENTR.                                                    01980036
-           PERFORM  110-BLQ-ENTR                                        01990049
+       220-CHK-ENTR.                                                    01980036
+      *    PERFORM  110-BLQ-ENTR                                        01990049
                                                                         02000000
            EVALUATE TRUE                                                02010036
               WHEN  TNOMEI  =  SPACES  OR  LOW-VALUES                   02020036
@@ -232,33 +232,39 @@
            END-EVALUATE.                                                02400036
                                                                         02410036
            MOVE     DFHBMPRF  TO  TMTRCA                                02411047
-           GO  TO   120-ATU-DATA.                                       02421052
+      *    GO  TO   120-ATU-DATA.                                       02421052
+           GO  TO   110-BLQ-ENTR.                                       02421052
                                                                         02430000
-       230-VER-RESP.                                                    02440040
-           IF  TESTE    =   'N'                                         02450069
-      *        MOVE     0   TO  WS-FASE                                 02451066
-               GO  TO   100-INI-MAPA.                                   02460066
-      *    IF  TRESPI   =   'S'                                         02470063
-      *        EXEC  SQL      INSERT  INTO  DBABS1.TABALU               02480000
-      *                     ( MTR_ALU, NOM_ALU, CUR_ALU,                02490000
-      *                       TUR_ALU, END_ALU, BAI_ALU,                02500000
-      *                       CID_ALU, EST_ALU, EML_ALU, TEL_ALU )      02510000
-      *              VALUES ( :TMTRCI, :TNOMEI, :TCURSI,                02520000
-      *                       :TTURMI, :TENDRI, :TBAIRI,                02530000
-      *                       :TCIDAI, :TESTDI, :TMAILI, :TFONEI )      02540000
-      *        END-EXEC.                                                02550000
-                                                                        02560000
-      *        IF  TMTRCI   =   1                                       02570063
-      *            MOVE     1     TO  WS-FASE                           02580063
-      *            MOVE     4     TO  WS-IMSG                           02590063
-      *        ELSE                                                     02600063
-      *            MOVE     5     TO  WS-IMSG                           02610063
-      *        END-IF                                                   02620063
-      *    ELSE                                                         02630063
-      *        MOVE     3     TO  WS-IMSG                               02640063
-      *    END-IF.                                                      02650063
-                                                                        02660036
-       240-MSGM-ERR.                                                    02670036
+       230-CHK-RESP.                                                    02440040
+           EVALUATE TRESPI
+              WHEN  'S'
+                    GO  TO   240-GRV-MTRC
+              WHEN  'N'
+                    GO  TO   100-INI-MAPA
+              WHEN  OTHER
+                    MOVE     3        TO   WS-IMSG
+                    GO  TO   250-MSGM-ERR
+           END-EVALUATE.
+
+       240-GRV-MTRC.
+      *    EXEC  SQL  INSERT   INTO     DBABS1.TABALU
+      *                      ( MTR_ALU, NOM_ALU, TUR_ALU, 
+      *                        TUR_ALU, END_ALU, BAI_ALU, 
+      *                        CID_ALU, EST_ALU, EML_ALU, TEL_ALU )
+      *               VALUES ( :TMTRCI, :TNOMEI, :TCURSI, 
+      *                        :TTURMI, :TENDRI, :TBAIRI, 
+      *                        :TCIDAI, :TESTDI, :TMAILI, :TFONEI )
+      *    END-EXEC 
+
+           MOVE     1         TO   WS-FASE
+                
+           IF  TMTRCI    =    '00001'
+               MOVE      4    TO   WS-IMSG
+           ELSE
+               MOVE      5    TO   WS-IMSG
+           END-IF.
+      
+       250-MSGM-ERR.                                                    02670036
            EXEC     CICS  SEND    CONTROL  ALARM   END-EXEC             02680036
                                                                         02690036
            EVALUATE WS-IMSG                                             02700036
@@ -277,6 +283,10 @@
            MOVE     SPACES    TO  TPCURO                                02830036
            MOVE     -1        TO  TPCURL                                02840036
            MOVE     DFHBMPRF  TO  TMTRCA   TPCURA                       02850036
-           COMPUTE  WS-FASE   =   WS-FASE  -  1                         02860060
+
+           IF  WS-FASE   =    1
+              MOVE       0    TO  WS-FASE.
+           
+      *    COMPUTE  WS-FASE   =   WS-FASE  -  1                         02860060
                                                                         02870036
            GO  TO   110-BLQ-ENTR.                                       02880049

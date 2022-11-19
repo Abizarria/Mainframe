@@ -177,9 +177,6 @@ TRESP   DFHMDF POS=(01,29),LENGTH=01,ATTRB=(UNPROT,IC),                X01750000
                INITIAL=' '                                              01770000
                                                                         01780009
         DFHMDF POS=(01,31),ATTRB=ASKIP                                  01790001
-                                                                        01790110
-        DFHMDF POS=(01,33),LENGTH=34,ATTRB=PROT,                       X01791013
-               INITIAL=' '                                              01793010
 *=====================================================================  01800006
         DFHMSD TYPE=FINAL                                               01810000
                END                                                      01820000
