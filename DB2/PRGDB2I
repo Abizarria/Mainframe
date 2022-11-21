@@ -188,7 +188,7 @@
            MOVE     2        TO   WS-FASE.                              01883062
                                                                         01970000
        220-CHK-ENTR.                                                    01980036
-      *    PERFORM  110-BLQ-ENTR                                        01990049
+           PERFORM  110-BLQ-ENTR                                        01990049
                                                                         02000000
            EVALUATE TRUE                                                02010036
               WHEN  TNOMEI  =  SPACES  OR  LOW-VALUES                   02020036
@@ -232,8 +232,8 @@
            END-EVALUATE.                                                02400036
                                                                         02410036
            MOVE     DFHBMPRF  TO  TMTRCA                                02411047
-      *    GO  TO   120-ATU-DATA.                                       02421052
-           GO  TO   110-BLQ-ENTR.                                       02421052
+           GO  TO   120-ATU-DATA.                                       02421052
+      *    GO  TO   110-BLQ-ENTR.                                       02421052
                                                                         02430000
        230-CHK-RESP.                                                    02440040
            EVALUATE TRESPI
