@@ -1,0 +1,62 @@
+//JCRIATAB JOB DBADB2JC,MSGCLASS=A,CLASS=C,NOTIFY=ALU0407               00010001
+//*                                                                     00020000
+//JOBLIB  DD  DSN=SYS2.DB2.SDSNLOAD,DISP=SHR                            00030000
+//*                                                                     00040000
+//*       STEP  1: CREATE SAMPLE STORAGE GROUPS, TABLESPACES            00050003
+//*                                                                     00051003
+//PH01S01 EXEC PGM=IKJEFT01,DYNAMNBR=20,COND=(4,LT)                     00060000
+//SYSTSPRT DD SYSOUT=*                                                  00070000
+//SYSTSIN  DD *                                                         00080000
+ DSN SYSTEM(DB2N)                                                       00090000
+ RUN  PROGRAM(DSNTIAD) PLAN(DSNTIA51) -                                 00100000
+      LIB('SYS2.DB2.RUNLIB.LOAD')                                       00110000
+//SYSPRINT DD SYSOUT=*                                                  00120000
+//SYSUDUMP DD SYSOUT=*                                                  00130000
+//SYSIN    DD *                                                         00140000
+ CREATE DATABASE ABSDB01                                                00150003
+   STOGROUP  JAKASTG1                                                   00160000
+   BUFFERPOOL BP0                                                       00170000
+   CCSID EBCDIC;                                                        00180000
+                                                                        00190000
+ COMMIT ;                                                               00200000
+                                                                        00210000
+ CREATE TABLESPACE  TSABS01 IN ABSDB01                                  00220003
+   BUFFERPOOL BP0                                                       00230000
+   LOCKSIZE   ANY                                                       00240000
+   SEGSIZE    4                                                         00250000
+   CLOSE      NO                                                        00260000
+   USING STOGROUP  JAKASTG1                                             00270000
+   PRIQTY     48                                                        00280002
+   SECQTY     48                                                        00290002
+   ERASE      NO                                                        00300000
+   PCTFREE    10                                                        00310000
+   FREEPAGE   0;                                                        00320000
+                                                                        00330000
+  COMMIT ;                                                              00340000
+                                                                        00350000
+   CREATE TABLE DBADB2.TABALU                                           00360003
+  (                                                                     00370000
+   MAT_ALU    SMALLINT    NOT NULL,                                     00380003
+   NOM_ALU    CHAR(30)    NOT NULL,                                     00390002
+   CUR_ALU    CHAR(20)    NOT NULL,                                     00400002
+   TUR_ALU    CHAR(15)    NOT NULL,                                     00410002
+   END_ALU    CHAR(30)    NOT NULL,                                     00420002
+   BAI_ALU    CHAR(20)    NOT NULL,                                     00430002
+   CID_ALU    CHAR(25)    NOT NULL,                                     00440002
+   EST_ALU    CHAR(02)    NOT NULL,                                     00450002
+   EML_ALU    CHAR(30)    NOT NULL,                                     00460002
+   TEL_ALU    CHAR(15)                                                  00470002
+   )                                                                    00480000
+    IN ABSDB01.TSABS01                                                  00490003
+    ;                                                                   00500000
+                                                                        00510000
+     CREATE    UNIQUE     INDEX                                         00520003
+     DBADB2.ITABALU  ON   DBADB2.TABALU                                 00530003
+                          (MAT_ALU ASC)                                 00540003
+                                                                        00550000
+ ;                                                                      00560000
+    ALTER TABLE DBADB2.TABALU                                           00570003
+      PRIMARY KEY (MAT_ALU)                                             00580003
+;                                                                       00590000
+GRANT SELECT,INSERT,UPDATE,DELETE ON DBADB2.TABALU TO PUBLIC;           00600003
+//                                                                      00610000

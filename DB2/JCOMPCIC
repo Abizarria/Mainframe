@@ -1,4 +1,4 @@
-//JCOMPCOB JOB IBMUSERC,MSGCLASS=A,CLASS=C,NOTIFY=ALU0407               00010000
+//JCOMPCIC JOB IBMUSERC,MSGCLASS=A,CLASS=C,NOTIFY=ALU0407               00010016
 //*                                                                     00020000
 //DFHCOBCL PROC NAME=,                                                  00030000
 //         FONTP='ABS.FONTES',                                          00040001
@@ -53,5 +53,5 @@
 //*                                                                     00530000
 //         PEND                                                         00540000
 //*                                                                     00550000
-//JCOMPCOB EXEC DFHCOBCL,NAME=PRGDB2I                                   00560012
+//JCOMPCIC EXEC DFHCOBCL,NAME=PRGDB2M                                   00560016
 //*                                                                     00570008

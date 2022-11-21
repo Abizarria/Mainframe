@@ -103,9 +103,9 @@
                                    CURSOR                               01040010
                     END-EXEC                                            01050003
              WHEN   1                                                   01060003
-                    MOVE     SPACES    TO   TPCURO                      01070010
-                    MOVE     DFHBMPRF  TO   TPCURA                      01080003
-                    MOVE     -1        TO   TPCURL                      01100003
+                    MOVE     SPACES    TO   TPCSRO                      01070012
+                    MOVE     DFHBMPRF  TO   TPCSRA                      01080012
+                    MOVE     -1        TO   TPCSRL                      01100012
                                                                         01110003
                     EXEC     CICS  SEND     MAP     ('ERRDB2M')         01120003
                                             MAPSET  ('MAPDB2M')         01130003
@@ -139,11 +139,11 @@
                     END-EXEC                                            01430003
              WHEN   2                                                   01440003
                     EXEC     CICS  XCTL                                 01450003
-                                   PROGRAM  ('PRGDB2C')                 01460010
+                                   PROGRAM  ('PRGDB2A')                 01460011
                     END-EXEC                                            01470003
              WHEN   3                                                   01480003
                     EXEC     CICS  XCTL                                 01490010
-                                   PROGRAM  ('PRGDB2A')                 01500010
+                                   PROGRAM  ('PRGDB2C')                 01500011
                     END-EXEC                                            01510003
              WHEN   4                                                   01520003
                     EXEC     CICS  XCTL                                 01530010
