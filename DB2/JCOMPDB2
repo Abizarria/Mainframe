@@ -77,18 +77,7 @@
 //         DD DSN=&&LOADSET,DISP=(OLD,DELETE)                           00770000
 //         DD DDNAME=SYSIN                                              00780000
 //*                                                                     00790000
-//*-------------------------------------------------------------------  00800000
-//*   BIND    : EXECUTAR O BIND DO PACKAGE                              00810000
-//*-------------------------------------------------------------------  00820000
-//BIND     EXEC PGM=IKJEFT01,DYNAMNBR=50                                00830000
-//STEPLIB  DD DISP=SHR,DSN=SYS2.DB2.SDSNLOAD                            00840000
-//         DD DISP=SHR,DSN=SYS2.CICSTS13.SDFHLOAD                       00850000
-//DBRMLIB  DD DISP=SHR,DSN=SYS2.DB2.DBRMLIB.DATA                        00860000
-//SYSTSPRT DD SYSOUT=*                                                  00870000
-//SYSPRINT DD SYSOUT=*                                                  00880000
-//SYSTSIN  DD DUMMY                                                     00890000
-//*                                                                     00900000
-//         PEND                                                         00910000
-//*                                                                     00920000
-//IBMUSERC EXEC DFHCOBSQ,NAME=PRGDB2I                                   00930002
-//*                                                                     00940000
+//         PEND                                                         00800000
+//*                                                                     00810000
+//IBMUSERC EXEC DFHCOBSQ,NAME=PRGDB2I                                   00820004
+//*                                                                     00830000

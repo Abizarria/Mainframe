@@ -1,18 +1,17 @@
-//IBMUSERC JOB IBMUSERC,MSGCLASS=A,CLASS=C,NOTIFY=ALUNOP2
-//*
-//*-------------------------------------------------------------------
-//*   BIND    : EXECUTAR O BIND DO PACKAGE
-//*-------------------------------------------------------------------
-//BIND     EXEC PGM=IKJEFT01,DYNAMNBR=50
-//STEPLIB  DD DISP=SHR,DSN=SYS2.DB2.SDSNLOAD
-//         DD DISP=SHR,DSN=SYS2.CICSTS13.SDFHLOAD
-//DBRMLIB  DD DISP=SHR,DSN=SYS2.DB2.DBRMLIB.DATA
-//SYSTSPRT DD SYSOUT=*
-//SYSPRINT DD SYSOUT=*
-//SYSIN    DD *
-//SYSTSIN  DD *
-DSN SYSTEM(DB2N)
-BIND PLAN(PEDB22XX) MEM(PEDB22XX) ACT(REP) ISOLATION(CS)  -
-     LIB('SYS2.DB2.DBRMLIB.DATA')
-END
-//*
+//JEXEBIND JOB IBMUSERC,MSGCLASS=A,CLASS=C,NOTIFY=ALU0407               00010001
+//*                                                                     00020001
+//*        EXECUTAR O BIND DO PACKAGE                                   00030001
+//*                                                                     00040001
+//BIND     EXEC PGM=IKJEFT01,DYNAMNBR=50                                00050000
+//STEPLIB  DD   DISP=SHR,DSN=SYS2.DB2.SDSNLOAD                          00060001
+//         DD   DISP=SHR,DSN=SYS2.CICSTS13.SDFHLOAD                     00070001
+//DBRMLIB  DD   DISP=SHR,DSN=SYS2.DB2.DBRMLIB.DATA                      00080001
+//SYSTSPRT DD   SYSOUT=*                                                00090001
+//SYSPRINT DD   SYSOUT=*                                                00100001
+//SYSIN    DD   *                                                       00110001
+//SYSTSIN  DD   *                                                       00120001
+  DSN  SYSTEM(DB2N)                                                     00130001
+  BIND PLAN(PRGDB2I) MEM(PRGDB2I) ACT(REP) ISOLATION(CS)  -             00140001
+       LIB('SYS2.DB2.DBRMLIB.DATA')                                     00150001
+  END                                                                   00160001
+//*                                                                     00170000

@@ -1,0 +1,96 @@
+//JDB2BIND JOB IBMUSERC,MSGCLASS=A,CLASS=C,NOTIFY=ALU0407               00010005
+//*                                                                     00030006
+//*        COMPILACAO DE PROGRAMA COBOL CICS COM DB2                    00040006
+//*                                                                     00060000
+//DFHCOBSQ PROC NAME=,                                                  00070000
+//         SOURCE='ABS.FONTES.DB2',                                     00080002
+//         BOOK='ABS.FONTES.BOOKS',                                     00090002
+//         LINK='IBMUSER.PGMS.LOADLIB',                                 00100000
+//         LOAD='IBMUSER.PGMS.LOADLIB'                                  00110000
+//*                                                                     00120006
+//*        PRE PROCESSADOR SQL                                          00130006
+//*                                                                     00140006
+//PC       EXEC PGM=DSNHPC,REGION=2M,                                   00150000
+//         PARM=('HOST(COBOL),APOST,APOSTSQL,SOURCE,VERSION(AUTO)')     00160000
+//STEPLIB  DD  DISP=SHR,DSN=SYS2.DB2.SDSNLOAD                           00170006
+//SYSLIB   DD  DSN=&BOOK,DISP=SHR                                       00180006
+//         DD  DSN=&SOURCE,DISP=SHR                                     00190006
+//DBRMLIB  DD  DISP=SHR,DSN=SYS2.DB2.DBRMLIB.DATA(&NAME)                00200006
+//SYSCIN   DD  DSN=&&DSNHOUT,DISP=(,PASS),SPACE=(800,(500,500)),        00210006
+//             UNIT=SYSDA                                               00220006
+//SYSPRINT DD  SYSOUT=*                                                 00230006
+//SYSTERM  DD  SYSOUT=*                                                 00240006
+//SYSUT1   DD  UNIT=SYSDA,SPACE=(800,(500,500),,,ROUND)                 00250006
+//SYSUT2   DD  UNIT=SYSDA,SPACE=(800,(500,500),,,ROUND)                 00260006
+//SYSIN    DD  DSN=&SOURCE(&NAME),DISP=SHR                              00270006
+//*                                                                     00280000
+//TRAN     EXEC PGM=DFHECP1$,REGION=2M,COND=(4,LT),                     00290000
+//         PARM=('COBOL2,SP')                                           00300000
+//STEPLIB  DD  DSN=SYS2.CICSTS13.SDFHLOAD,DISP=SHR                      00310006
+//SYSPRINT DD  SYSOUT=*                                                 00320006
+//SYSPUNCH DD  DSN=&&SYSCIN,DISP=(,PASS),                               00330006
+//         UNIT=SYSDA,                                                  00340000
+//         SPACE=(400,(1000,200)),                                      00350000
+//         DCB=BLKSIZE=400                                              00360000
+//SYSIN    DD  DSN=&&DSNHOUT,DISP=(OLD,PASS)                            00370006
+//*                                                                     00380000
+//COB      EXEC PGM=IGYCRCTL,REGION=4M,                                 00390000
+//         COND=(5,LT,TRAN),                                            00400000
+//    PARM=('SOURCE,VBREF,APOST,XREF(FULL),TRUNC(OPT),RENT,LIB',        00410006
+//          'NOOFFSET,MAP,NOSEQ,SIZE(2048K),OPT,NODYN,LIST')            00420006
+//* EPLIB  DD  DSN=SYS1.COB2COMP,DISP=SHR                               00430006
+//STEPLIB  DD  DSN=IGY.V2R1M0.SIGYCOMP,DISP=SHR                         00440006
+//SYSPRINT DD  SYSOUT=*                                                 00450006
+//SYSLIB   DD  DSN=SYS2.CICSTS13.SDFHCOB,DISP=SHR                       00460006
+//         DD  DSN=&BOOK,DISP=SHR                                       00470006
+//         DD  DSN=&SOURCE,DISP=SHR                                     00480006
+//SYSLIN   DD  DSN=&&LOADSET,DISP=(MOD,PASS),                           00490006
+//         UNIT=SYSDA,                                                  00500000
+//         SPACE=(CYL,(01,01))                                          00510000
+//SYSUT1   DD  UNIT=SYSDA,SPACE=(CYL,(02,02))                           00520006
+//SYSUT2   DD  UNIT=SYSDA,SPACE=(CYL,(02,02))                           00530006
+//SYSUT3   DD  UNIT=SYSDA,SPACE=(CYL,(02,02))                           00540006
+//SYSUT4   DD  UNIT=SYSDA,SPACE=(CYL,(02,02))                           00550006
+//SYSUT5   DD  UNIT=SYSDA,SPACE=(CYL,(02,02))                           00560006
+//SYSUT6   DD  UNIT=SYSDA,SPACE=(CYL,(02,02))                           00570006
+//SYSUT7   DD  UNIT=SYSDA,SPACE=(CYL,(02,02))                           00580006
+//SYSIN    DD  DSN=&&SYSCIN,DISP=(OLD,DELETE)                           00590006
+//*                                                                     00600000
+//LKED     EXEC PGM=IEWL,REGION=4M,                                     00610000
+//         COND=((5,LT,TRAN),(5,LT,COB)),                               00620000
+//    PARM='SIZE=(192K,60K),XREF,LIST,LET,NORENT,AMODE=31,RMODE=ANY'    00630000
+//*   PARM='SIZE=(192K,60K),XREF,LIST,LET,RENT,AMODE=31,RMODE=ANY'      00640006
+//SYSPRINT DD SYSOUT=*                                                  00650000
+//SYSLIB   DD DISP=SHR,DSN=SYS2.CICSTS13.SDFHLOAD                       00660000
+//*        DD DISP=SHR,DSN=SYS1.COB2LIB                                 00670000
+//         DD DISP=SHR,DSN=CEE.SCEELKED                                 00680000
+//         DD DISP=SHR,DSN=SYS2.DB2.SDSNLOAD                            00690000
+//         DD DSN=&LINK,DISP=SHR                                        00700000
+//SYSUT1   DD UNIT=SYSDA,                                               00710000
+//         SPACE=(1024,(200,20)),                                       00720000
+//         DCB=BLKSIZE=1024                                             00730000
+//SYSLMOD  DD DSN=&LOAD(&NAME),DISP=SHR                                 00740000
+//SYSLIN   DD DSN=SYS2.CICSTS13.SDFHCOB(DFHEILIC),DISP=SHR              00750000
+//         DD DSN=SYS2.DB2.SDSNLOAD(DSNCLI),DISP=SHR                    00760000
+//         DD DSN=&&LOADSET,DISP=(OLD,DELETE)                           00770000
+//         DD DDNAME=SYSIN                                              00780000
+//*                                                                     00781005
+//         PEND                                                         00782005
+//*                                                                     00783005
+//IBMUSERC EXEC DFHCOBSQ,NAME=PRGDB2I                                   00784005
+//*                                                                     00790005
+//*        EXECUTAR O BIND DO PACKAGE                                   00800006
+//*                                                                     00810006
+//BIND     EXEC PGM=IKJEFT01,DYNAMNBR=50                                00820006
+//STEPLIB  DD   DISP=SHR,DSN=SYS2.DB2.SDSNLOAD                          00830006
+//         DD   DISP=SHR,DSN=SYS2.CICSTS13.SDFHLOAD                     00840006
+//DBRMLIB  DD   DISP=SHR,DSN=SYS2.DB2.DBRMLIB.DATA                      00850006
+//SYSTSPRT DD   SYSOUT=*                                                00860006
+//SYSPRINT DD   SYSOUT=*                                                00870006
+//SYSIN    DD   *                                                       00880006
+//SYSTSIN  DD   *                                                       00890006
+  DSN  SYSTEM(DB2N)                                                     00900006
+  BIND PLAN(PRGDB2I) MEM(PRGDB2I) ACT(REP) ISOLATION(CS)  -             00910006
+       LIB('SYS2.DB2.DBRMLIB.DATA')                                     00920006
+  END                                                                   00930006
+//*                                                                     00940006

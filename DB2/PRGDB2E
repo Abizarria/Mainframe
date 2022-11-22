@@ -1,11 +1,11 @@
        IDENTIFICATION      DIVISION.                                    00010000
-       PROGRAM-ID.         PRGDB2I.                                     00020000
+       PROGRAM-ID.         PRGDB2E.                                     00020000
        AUTHOR.             ADILSON BIZARRIA.                            00030000
        INSTALLATION.       FUTURE SCHOOL.                               00040000
-       DATE-WRITTEN.       11/16/2022.                                  00050000
+       DATE-WRITTEN.       11/21/2022.                                  00050000
        DATE-COMPILED.                                                   00060000
       *-------------------------------------*                           00070000
-      * DB2 - CADASTRO DE ALUNOS (INCLUSAO) *                           00080000
+      * DB2 - CADASTRO DE ALUNOS (EXCLUSAO) *                           00080000
       *-------------------------------------*                           00090000
        ENVIRONMENT         DIVISION.                                    00100000
        CONFIGURATION       SECTION.                                     00110000
@@ -86,7 +86,7 @@
            MOVE     DFHBMPRF  TO   TDATAA    THORAA.                    00860000
                                                                         00870000
        130-ATU-TELA.                                                    00880000
-           MOVE    'INCLUSAO' TO   TOPR1O                               00890000
+           MOVE    'EXCLUSAO' TO   TOPR1O                               00890000
            MOVE     EIBTRNID  TO   TTRNSO                               00900000
            MOVE     EIBTRMID  TO   TTERMO                               00910000
            MOVE     SPACES    TO   TPCSRO                               00920000
@@ -106,11 +106,11 @@
            EXEC     CICS  SEND     PAGE      END-EXEC                   01060000
                                                                         01070000
            EXEC     CICS  RETURN   COMMAREA (WS-FASE)                   01080000
-                                   TRANSID  ('DB2I')                    01090000
+                                   TRANSID  ('DB2E')                    01090000
            END-EXEC.                                                    01100000
                                                                         01110000
        140-MAPA-RSP.                                                    01120000
-           MOVE    'INCLUSAO' TO   TOPR2O                               01130000
+           MOVE    'EXCLUSAO' TO   TOPR2O                               01130000
            MOVE     SPACES    TO   TRESPO                               01140000
            MOVE     DFHBMPRF  TO   TOPR2A                               01150000
            MOVE     DFHBMFSE  TO   TRESPA                               01160000
@@ -152,14 +152,12 @@
               WHEN  0                                                   01520000
                     GO  TO    100-INI-MAPA                              01530000
               WHEN  1                                                   01540000
-                    GO  TO    300-CHK-CODE                              01550009
+                    GO  TO    210-CHK-MTRC                              01550000
               WHEN  2                                                   01560000
-                    GO  TO    310-CHK-ENTR                              01570009
-              WHEN  3                                                   01580000
-                    GO  TO    320-CHK-RESP                              01590009
+                    GO  TO    230-CHK-RESP                              01590000
            END-EVALUATE.                                                01600000
                                                                         01610000
-       300-CHK-CODE.                                                    01620009
+       210-CHK-MTRC.                                                    01620000
            EXEC     CICS  BIF      DEEDIT                               01630000
                           FIELD   (TMTRCI)                              01640000
                           LENGTH  (5)                                   01650000
@@ -167,153 +165,90 @@
                                                                         01670000
            IF  TMTRCI   NOT   NUMERIC  OR                               01680003
                TMTRCI   =     '00000'                                   01690000
-               MOVE     1     TO  WS-IMSG                               01700009
-               GO  TO   400-ATU-MSGM.                                   01710009
+               MOVE     1     TO   WS-IMSG                              01700003
+               GO  TO   300-MSGM-ERR.                                   01710000
                                                                         01720003
-           MOVE     TMTRCI    TO  MAT-ALU                               01730009
+           MOVE     TMTRCI    TO   MAT-ALU                              01730000
                                                                         01740003
-           EXEC     SQL   SELECT  MAT_ALU,                              01750009
-                                  NOM_ALU,  CUR_ALU,  TUR_ALU,          01760009
-                                  END_ALU,  BAI_ALU,  CID_ALU,          01770009
-                                  EST_ALU,  EML_ALU,  TEL_ALU           01780009
+           EXEC     SQL   SELECT   MAT_ALU,                             01750000
+                                   NOM_ALU,  CUR_ALU,  TUR_ALU,         01760003
+                                   END_ALU,  BAI_ALU,  CID_ALU,         01770003
+                                   EST_ALU,  EML_ALU,  TEL_ALU          01780003
                                                                         01790003
-                          INTO   :MAT-ALU,                              01800009
-                                 :NOM-ALU, :CUR-ALU, :TUR-ALU,          01810009
-                                 :END-ALU, :BAI-ALU, :CID-ALU,          01820009
-                                 :EST-ALU, :EML-ALU, :TEL-ALU           01830009
+                          INTO    :MAT-ALU,                             01791006
+                                  :NOM-ALU, :CUR-ALU, :TUR-ALU,         01792006
+                                  :END-ALU, :BAI-ALU, :CID-ALU,         01793006
+                                  :EST-ALU, :EML-ALU, :TEL-ALU          01794006
                                                                         01840003
-                          FROM    DBADB2.TABALU                         01850009
+                          FROM     DBADB2.TABALU                        01850003
                                                                         01860003
-                          WHERE   MAT_ALU      =     :MAT-ALU           01870009
+                          WHERE    MAT_ALU      =     :MAT-ALU          01870000
            END-EXEC                                                     01880005
                                                                         01890000
-           IF  SQLCODE    =   0                                         01900000
-               MOVE     NOM-ALU   TO   TNOMEO                           01910003
-               MOVE     CUR-ALU   TO   TCURSO                           01920003
-               MOVE     TUR-ALU   TO   TTURMO                           01930003
-               MOVE     END-ALU   TO   TENDRO                           01940003
-               MOVE     BAI-ALU   TO   TBAIRO                           01950003
-               MOVE     CID-ALU   TO   TCIDAO                           01960003
-               MOVE     EST-ALU   TO   TESTDO                           01970003
-               MOVE     EML-ALU   TO   TMAILO                           01980003
-               MOVE     TEL-ALU   TO   TFONEO                           01990003
-                                                                        02000000
+           IF  SQLCODE    >   0                                         01900000
                MOVE     2         TO   WS-IMSG                          02010000
-               GO  TO   400-ATU-MSGM.                                   02020009
-                                                                        02030000
-           MOVE     2         TO   WS-FASE.                             02040003
+               GO  TO   300-MSGM-ERR.                                   02020000
+                                                                        02000000
+           MOVE     2         TO   WS-FASE                              02040003
                                                                         02050000
-       310-CHK-ENTR.                                                    02060009
+           MOVE     NOM-ALU   TO   TNOMEO                               01910003
+           MOVE     CUR-ALU   TO   TCURSO                               01920003
+           MOVE     TUR-ALU   TO   TTURMO                               01930003
+           MOVE     END-ALU   TO   TENDRO                               01940003
+           MOVE     BAI-ALU   TO   TBAIRO                               01950003
+           MOVE     CID-ALU   TO   TCIDAO                               01960003
+           MOVE     EST-ALU   TO   TESTDO                               01970003
+           MOVE     EML-ALU   TO   TMAILO                               01980003
+           MOVE     TEL-ALU   TO   TFONEO                               01990003
            MOVE     DFHBMPRF  TO   TMTRCA                               02070000
-           PERFORM  110-BLQ-ENTR                                        02080000
-                                                                        02090000
-           EVALUATE TRUE                                                02100000
-              WHEN  TNOMEI   =  LOW-VALUES  OR  SPACES                  02110003
-                    MOVE    'INFORME O NOME DO ALUNO    '  TO  TMSGMO   02120003
-                    MOVE     DFHBMFSE  TO  TNOMEA                       02130003
-                    MOVE     -1        TO  TNOMEL                       02140003
-              WHEN  TCURSI   =  LOW-VALUES  OR  SPACES                  02150003
-                    MOVE    'INFORME O NOME DO CURSO    '  TO  TMSGMO   02160003
-                    MOVE     DFHBMFSE  TO  TCURSA                       02170003
-                    MOVE     -1        TO  TCURSL                       02180003
-              WHEN  TTURMI   =  LOW-VALUES  OR  SPACES                  02190003
-                    MOVE    'INFORME A TURMA DO ALUNO   '  TO  TMSGMO   02200003
-                    MOVE     DFHBMFSE  TO  TTURMA                       02210003
-                    MOVE     -1        TO  TTURML                       02220003
-              WHEN  TENDRI   =  LOW-VALUES  OR  SPACES                  02230003
-                    MOVE    'INFORME O ENDERECO DO ALUNO'  TO  TMSGMO   02240003
-                    MOVE     DFHBMFSE  TO  TENDRA                       02250003
-                    MOVE     -1        TO  TENDRL                       02260003
-              WHEN  TBAIRI   =  LOW-VALUES  OR  SPACES                  02270003
-                    MOVE    'INFORME O NOME DO BAIRRO   '  TO  TMSGMO   02280003
-                    MOVE     DFHBMFSE  TO  TBAIRA                       02290003
-                    MOVE     -1        TO  TBAIRL                       02300003
-              WHEN  TCIDAI   =  LOW-VALUES  OR  SPACES                  02310003
-                    MOVE    'INFORME O NOME DO CIDADE   '  TO  TMSGMO   02320003
-                    MOVE     DFHBMFSE  TO  TCIDAA                       02330003
-                    MOVE     -1        TO  TCIDAL                       02340003
-              WHEN  TESTDI   =  LOW-VALUES  OR  SPACES                  02350003
-                    MOVE    'INFORME A SIGLA DO ESTADO  '  TO  TMSGMO   02360003
-                    MOVE     DFHBMFSE  TO  TESTDA                       02370003
-                    MOVE     -1        TO  TESTDL                       02380003
-              WHEN  TMAILI   =  LOW-VALUES  OR  SPACES                  02390003
-                    MOVE    'INFORME O E-MAIL DO ALUNO  '  TO  TMSGMO   02400003
-                    MOVE     DFHBMFSE  TO  TMAILA                       02410003
-                    MOVE     -1        TO  TMAILL                       02420003
-              WHEN  TFONEI   =  LOW-VALUES  OR  SPACES                  02430003
-                    MOVE    'INFORME O TELEFONE DO ALUNO'  TO  TMSGMO   02440003
-                    MOVE     DFHBMFSE  TO  TFONEA                       02450003
-                    MOVE     -1        TO  TFONEL                       02460003
-              WHEN  OTHER                                               02470000
-                    MOVE     3         TO  WS-FASE                      02480003
-           END-EVALUATE.                                                02490000
-                                                                        02500000
-           GO  TO   120-ATU-DATA.                                       02510000
+           GO  TO   110-BLQ-ENTR                                        02080000
                                                                         02520000
-       320-CHK-RESP.                                                    02530009
+       230-CHK-RESP.                                                    02530000
            EVALUATE TRESPI                                              02540000
               WHEN  'S'                                                 02550000
-                    GO  TO    240-GRV-MTRC                              02560000
+                    GO  TO    240-DEL-MTRC                              02560000
               WHEN  'N'                                                 02570000
                     GO  TO    100-INI-MAPA                              02580000
               WHEN  OTHER                                               02590000
-                    MOVE      3   TO  WS-IMSG                           02600009
-                    MOVE      2   TO  WS-FASE                           02610009
-                    GO  TO    400-ATU-MSGM                              02620009
+                    MOVE      3         TO  WS-IMSG                     02600003
+                    MOVE      1         TO  WS-FASE                     02610003
+                    GO  TO    300-MSGM-ERR                              02620000
            END-EVALUATE.                                                02630000
                                                                         02640000
-       240-GRV-MTRC.                                                    02650000
+       240-DEL-MTRC.                                                    02650000
            MOVE     TMTRCI    TO   MAT-ALU                              02660003
-           MOVE     TNOMEI    TO   NOM-ALU                              02670003
-           MOVE     TCURSI    TO   CUR-ALU                              02680003
-           MOVE     TTURMI    TO   TUR-ALU                              02690003
-           MOVE     TENDRI    TO   END-ALU                              02700003
-           MOVE     TBAIRI    TO   BAI-ALU                              02710003
-           MOVE     TCIDAI    TO   CID-ALU                              02720003
-           MOVE     TESTDI    TO   EST-ALU                              02730003
-           MOVE     TMAILI    TO   EML-ALU                              02740003
-           MOVE     TFONEI    TO   TEL-ALU                              02750003
                                                                         02760003
-           EXEC     SQL   INSERT   INTO      DBADB2.TABALU              02770000
-                                 ( MAT_ALU,                             02780000
-                                   NOM_ALU,  CUR_ALU,  TUR_ALU,         02790000
-                                   END_ALU,  BAI_ALU,  CID_ALU,         02800000
-                                   EST_ALU,  EML_ALU,  TEL_ALU )        02810000
-                                                                        02820009
-                          VALUES (:MAT-ALU,                             02830000
-                                  :NOM-ALU, :CUR-ALU, :TUR-ALU,         02840000
-                                  :END-ALU, :BAI-ALU, :CID-ALU,         02850000
-                                  :EST-ALU, :EML-ALU, :TEL-ALU )        02860000
-           END-EXEC                                                     02870000
-                                                                        02880000
-           MOVE     1         TO   WS-FASE                              02890000
-                                                                        02900000
-           IF  SQLCODE   =    0                                         02910000
-               MOVE      4    TO   WS-IMSG                              02920000
-           ELSE                                                         02930000
-               MOVE      5    TO   WS-IMSG                              02940000
-           END-IF.                                                      02950000
-                                                                        02960000
-       400-ATU-MSGM.                                                    02970009
-           IF  WS-IMSG  NOT   =    4                                    02980009
-               EXEC     CICS  SEND  CONTROL  ALARM  END-EXEC.           02990008
-                                                                        03000000
-           EVALUATE WS-IMSG                                             03010000
-              WHEN  1                                                   03020000
-                    MOVE 'NUMERO DA MATRICULA INVALIDO!'  TO  TMSGMO    03030000
-              WHEN  2                                                   03040000
-                    MOVE 'MATRICULA JA CADASTRADA!     '  TO  TMSGMO    03050000
-              WHEN  3                                                   03060000
-                    MOVE 'RESPONDA COM S OU N APENAS!  '  TO  TMSGMO    03070003
-              WHEN  4                                                   03080000
-                    MOVE 'INCLUSAO BEM SUCEDIDA!       '  TO  TMSGMO    03090000
-              WHEN  5                                                   03100000
-                    MOVE 'ERRO NA INCLUSAO DO ALUNO!   '  TO  TMSGMO    03110000
-           END-EVALUATE                                                 03120000
-                                                                        03130000
-           MOVE     DFHBMPRF  TO   TMTRCA                               03140003
-           MOVE     -1        TO   TPCSRL                               03150000
-                                                                        03160000
-           IF  WS-FASE   =    1                                         03170000
-               MOVE      0    TO   WS-FASE.                             03180003
-           GO  TO   110-BLQ-ENTR.                                       03190000
+           EXEC     SQL   DELETE   INTO      DBADB2.TABALU              02770000
+                          WHERE    MAT_ALU   =   MAT-ALU                02820000
+           END-EXEC                                                     02860000
+                                                                        02870000
+           MOVE     1         TO   WS-FASE                              02880000
+                                                                        02890000
+           IF  SQLCODE   =    0                                         02900000
+               MOVE      4    TO   WS-IMSG                              02910000
+           ELSE                                                         02920000
+               MOVE      5    TO   WS-IMSG                              02930000
+           END-IF.                                                      02940000
+                                                                        02950000
+       300-MSGM-ERR.                                                    02960000
+           EXEC     CICS  SEND     CONTROL  ALARM   END-EXEC            02970003
+                                                                        02980000
+           EVALUATE WS-IMSG                                             02990000
+              WHEN  1                                                   03000000
+                    MOVE 'NUMERO DA MATRICULA INVALIDO!'  TO  TMSGMO    03010000
+              WHEN  2                                                   03020000
+                    MOVE 'MATRICULA NAO ENCONTRADA!    '  TO  TMSGMO    03030000
+              WHEN  3                                                   03040000
+                    MOVE 'RESPONDA COM S OU N APENAS!  '  TO  TMSGMO    03050003
+              WHEN  4                                                   03060000
+                    MOVE 'EXCLUSAO BEM SUCEDIDA!       '  TO  TMSGMO    03070000
+              WHEN  5                                                   03080000
+                    MOVE 'ERRO NA EXCLUSAO DO ALUNO!   '  TO  TMSGMO    03090000
+           END-EVALUATE                                                 03100000
+                                                                        03110000
+           MOVE     DFHBMPRF  TO   TMTRCA                               03120003
+           MOVE     -1        TO   TPCSRL                               03130000
+                                                                        03140000
+           IF  WS-FASE   =    1                                         03150000
+               MOVE      0    TO   WS-FASE.                             03160003
+           GO  TO   110-BLQ-ENTR.                                       03170000
