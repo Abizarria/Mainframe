@@ -1,190 +1,190 @@
-       IDENTIFICATION      DIVISION.                                    00010000
-       PROGRAM-ID.         PRGDB2C.                                     00020000
-       AUTHOR.             ADILSON BIZARRIA.                            00030000
-       INSTALLATION.       FUTURE SCHOOL.                               00040000
-       DATE-WRITTEN.       11/21/2022.                                  00050000
-       DATE-COMPILED.                                                   00060000
-      *-------------------------------------*                           00070000
-      * DB2 - CADASTRO DE ALUNOS (CONSULTA) *                           00080000
-      *-------------------------------------*                           00090000
-       ENVIRONMENT         DIVISION.                                    00100000
-       CONFIGURATION       SECTION.                                     00110000
-                                                                        00120000
-       SOURCE-COMPUTER.    IBM-3090.                                    00130000
-       OBJECT-COMPUTER.    IBM-3090.                                    00140000
-                                                                        00150000
-       SPECIAL-NAMES.                                                   00160000
-                           DECIMAL-POINT IS COMMA.                      00170000
-                                                                        00180000
-       INPUT-OUTPUT        SECTION.                                     00190000
-                                                                        00200000
-       FILE-CONTROL.                                                    00210000
-                                                                        00220000
-       DATA                DIVISION.                                    00230000
-       FILE                SECTION.                                     00240000
-                                                                        00250000
-       WORKING-STORAGE     SECTION.                                     00260000
-                                                                        00270000
-       77  WS-TIME         PIC S9(15)  COMP-3.                          00280000
-       77  WS-DATA         PIC  X(08).                                  00290000
-       77  WS-HORA         PIC  X(05).                                  00300000
-       77  WS-FASE         PIC  9(01).                                  00310000
-       77  WS-IMSG         PIC  9(01).                                  00320000
-                                                                        00330000
-           COPY    DFHAID.                                              00340000
-           COPY    DFHBMSCA.                                            00350000
-           COPY    MAPDB2C.                                             00360000
-                                                                        00370000
-           EXEC    SQL     INCLUDE    SQLCA     END-EXEC.               00380000
-           EXEC    SQL     INCLUDE    DB2ALU    END-EXEC.               00390000
-                                                                        00400000
-       LINKAGE             SECTION.                                     00410000
-                                                                        00420000
-       01  DFHCOMMAREA.                                                 00430000
-           03  LK-FASE     PIC  9(01).                                  00440000
-                                                                        00450000
-       PROCEDURE           DIVISION.                                    00460000
-                                                                        00470000
-       000-INI-PROG.                                                    00480000
-           IF  EIBCALEN   =   0                                         00490000
-               GO  TO         100-INI-MAPA                              00500000
-           ELSE                                                         00510000
-               PERFORM        200-REC-TELA                              00520000
-           END-IF.                                                      00530000
-                                                                        00540000
-       100-INI-MAPA.                                                    00550000
-           MOVE     0         TO   TMTRCO                               00560000
-           MOVE     SPACES    TO   TNOMEO    TCURSO    TTURMO           00570000
-                                   TENDRO    TBAIRO    TCIDAO           00580000
-                                   TESTDO    TMAILO    TFONEO           00590000
-                                                                        00600000
-           MOVE    'INFORME O NUMERO DA MATRICULA' TO  TMSGMO           00610000
-                                                                        00620000
-           MOVE     DFHBMFSE  TO   TMTRCA                               00630000
-           MOVE    -1         TO   TMTRCL                               00640000
-           MOVE     1         TO   WS-FASE.                             00650000
-                                                                        00660000
-       110-BLQ-ENTR.                                                    00670000
-           MOVE     DFHBMPRF  TO   TNOMEA    TCURSA    TTURMA           00680000
-                                   TENDRA    TBAIRA    TCIDAA           00690000
-                                   TESTDA    TMAILA    TFONEA.          00700000
-       120-ATU-DATA.                                                    00710000
-           EXEC     CICS  ASKTIME                                       00720000
-                          ABSTIME (WS-TIME)                             00730000
-           END-EXEC                                                     00740000
-                                                                        00750000
-           EXEC     CICS  FORMATTIME                                    00760000
-                          ABSTIME (WS-TIME)                             00770000
-                          DATESEP ('/')                                 00780000
-                          DDMMYY  (WS-DATA)                             00790000
-                          TIMESEP (':')                                 00800000
-                          TIME    (WS-HORA)                             00810000
-           END-EXEC                                                     00820000
-                                                                        00830000
-           MOVE     WS-DATA   TO   TDATAO                               00840000
-           MOVE     WS-HORA   TO   THORAO                               00850000
-           MOVE     DFHBMPRF  TO   TDATAA    THORAA.                    00860000
-                                                                        00870000
-       130-ATU-TELA.                                                    00880000
-           MOVE    'CONSULTA' TO   TOPR1O                               00890000
-           MOVE     EIBTRNID  TO   TTRNSO                               00900000
-           MOVE     EIBTRMID  TO   TTERMO                               00910000
-           MOVE     SPACES    TO   TPCSRO                               00920000
-                                                                        00930000
-           MOVE     DFHBMPRF  TO   TOPR1A    TTRNSA                     00940000
-                                   TTERMA    TMSGMA    TPCSRA           00950000
-                                                                        00960000
-           EXEC     CICS  SEND     MAP      ('MAPDB2C')                 00970000
-                                   MAPSET   ('MAPDB2C')                 00980000
-                          FROM              (MAPDB2CO)                  00990000
-                          ERASE    CURSOR                               01000000
-           END-EXEC                                                     01010000
-                                                                        01020000
-           EXEC     CICS  SEND     PAGE      END-EXEC                   01030000
-                                                                        01040000
-           EXEC     CICS  RETURN   COMMAREA (WS-FASE)                   01050000
-                                   TRANSID  ('DB2C')                    01060000
-           END-EXEC.                                                    01070000
-                                                                        01080000
-       200-REC-TELA.                                                    01090000
-           EXEC     CICS  RECEIVE MAP     ('MAPDB2C')                   01100000
-                                  MAPSET  ('MAPDB2C')                   01110000
-                          INTO            (MAPDB2CI)                    01120000
-           END-EXEC                                                     01130000
-                                                                        01140000
-           MOVE     LK-FASE   TO   WS-FASE                              01150000
-                                                                        01160000
-           IF  EIBAID    =    DFHPF3  AND  WS-FASE  >  0                01170002
-               EXEC    CICS   XCTL                                      01180000
-                              PROGRAM     ('PRGDB2M')                   01190002
-               END-EXEC                                                 01200000
-           END-IF                                                       01210000
-                                                                        01220000
-           EVALUATE WS-FASE                                             01230000
-              WHEN  0                                                   01240000
-                    GO  TO    100-INI-MAPA                              01250000
-              WHEN  1                                                   01260000
-                    GO  TO    210-CHK-MTRC                              01270000
-           END-EVALUATE.                                                01280000
-                                                                        01290000
-       210-CHK-MTRC.                                                    01300000
-           EXEC     CICS  BIF      DEEDIT                               01310000
-                          FIELD   (TMTRCI)                              01320000
-                          LENGTH  (5)                                   01330000
-           END-EXEC                                                     01340000
-                                                                        01350000
-           IF  TMTRCI   NOT   NUMERIC  OR                               01360000
-               TMTRCI   =     '00000'                                   01370000
-               MOVE     1     TO   WS-IMSG                              01380000
-               GO  TO   220-ATU-MSGM.                                   01390003
-                                                                        01400000
-           MOVE     TMTRCI    TO   MAT-ALU                              01410000
-                                                                        01420000
-           EXEC     SQL   SELECT   MAT_ALU,                             01430000
-                                   NOM_ALU,  CUR_ALU,  TUR_ALU,         01440000
-                                   END_ALU,  BAI_ALU,  CID_ALU,         01450000
-                                   EST_ALU,  EML_ALU,  TEL_ALU          01460000
-                                                                        01470000
-                          INTO    :MAT-ALU,                             01480000
-                                  :NOM-ALU, :CUR-ALU, :TUR-ALU,         01490000
-                                  :END-ALU, :BAI-ALU, :CID-ALU,         01500000
-                                  :EST-ALU, :EML-ALU, :TEL-ALU          01510000
-                                                                        01520000
-                          FROM     DBADB2.TABALU                        01530000
-                                                                        01540000
-                          WHERE    MAT_ALU      =     :MAT-ALU          01550000
-           END-EXEC                                                     01560000
-                                                                        01570000
-           IF  SQLCODE    =   0                                         01580001
-               MOVE     NOM-ALU   TO   TNOMEO                           01590001
-               MOVE     CUR-ALU   TO   TCURSO                           01600000
-               MOVE     TUR-ALU   TO   TTURMO                           01610000
-               MOVE     END-ALU   TO   TENDRO                           01620000
-               MOVE     BAI-ALU   TO   TBAIRO                           01630000
-               MOVE     CID-ALU   TO   TCIDAO                           01640000
-               MOVE     EST-ALU   TO   TESTDO                           01650000
-               MOVE     EML-ALU   TO   TMAILO                           01660000
-               MOVE     TEL-ALU   TO   TFONEO                           01670000
-                                                                        01680000
-               MOVE     2         TO   WS-IMSG                          01690001
-           ELSE                                                         01700001
-               MOVE     3         TO   WS-IMSG                          01710001
-           END-IF.                                                      01720001
-                                                                        01730000
-       220-ATU-MSGM.                                                    01740003
-           IF  WS-IMSG  NOT  =   2                                      01750001
-               EXEC     CICS  SEND     CONTROL   ALARM    END-EXEC.     01760001
-                                                                        01770000
-           EVALUATE WS-IMSG                                             01780000
-              WHEN  1                                                   01790000
-                    MOVE 'NUMERO DA MATRICULA INVALIDO!'  TO  TMSGMO    01800000
-              WHEN  2                                                   01810000
-                    MOVE 'CONSULTA BEM SUCEDIDA!       '  TO  TMSGMO    01820000
-              WHEN  3                                                   01830000
-                    MOVE 'MATRICULA NAO ENCONTRADA!    '  TO  TMSGMO    01840000
-           END-EVALUATE                                                 01850000
-                                                                        01860000
-           MOVE     DFHBMPRF  TO   TMTRCA                               01870000
-           MOVE     -1        TO   TPCSRL                               01880000
-           MOVE      0        TO   WS-FASE                              01890000
-           GO  TO   110-BLQ-ENTR.                                       01900000
+       IDENTIFICATION      DIVISION.
+       PROGRAM-ID.         PRGDB2C.
+       AUTHOR.             ADILSON BIZARRIA.
+       INSTALLATION.       FUTURE SCHOOL.
+       DATE-WRITTEN.       11/21/2022.
+       DATE-COMPILED.
+      *-------------------------------------*
+      * DB2 - CADASTRO DE ALUNOS (CONSULTA) *
+      *-------------------------------------*
+       ENVIRONMENT         DIVISION.
+       CONFIGURATION       SECTION.
+
+       SOURCE-COMPUTER.    IBM-3090.
+       OBJECT-COMPUTER.    IBM-3090.
+
+       SPECIAL-NAMES.
+                           DECIMAL-POINT IS COMMA.
+
+       INPUT-OUTPUT        SECTION.
+
+       FILE-CONTROL.
+
+       DATA                DIVISION.
+       FILE                SECTION.
+
+       WORKING-STORAGE     SECTION.
+
+       77  WS-TIME         PIC S9(15)  COMP-3.
+       77  WS-DATA         PIC  X(08).
+       77  WS-HORA         PIC  X(05).
+       77  WS-FASE         PIC  9(01).
+       77  WS-IMSG         PIC  9(01).
+
+           COPY    DFHAID.
+           COPY    DFHBMSCA.
+           COPY    MAPDB2C.
+
+           EXEC    SQL     INCLUDE    SQLCA     END-EXEC.
+           EXEC    SQL     INCLUDE    DB2ALU    END-EXEC.
+
+       LINKAGE             SECTION.
+
+       01  DFHCOMMAREA.
+           03  LK-FASE     PIC  9(01).
+
+       PROCEDURE           DIVISION.
+
+       000-INI-PROG.
+           IF  EIBCALEN   =   0
+               GO  TO         100-INI-MAPA
+           ELSE
+               GO  TO         200-REC-TELA
+           END-IF.
+
+       100-INI-MAPA.
+           MOVE     0         TO   TMTRCO
+           MOVE     SPACES    TO   TNOMEO    TCURSO    TTURMO
+                                   TENDRO    TBAIRO    TCIDAO
+                                   TESTDO    TMAILO    TFONEO
+
+           MOVE    'INFORME O NUMERO DA MATRICULA' TO  TMSGMO
+
+           MOVE     DFHBMFSE  TO   TMTRCA
+           MOVE    -1         TO   TMTRCL
+           MOVE     1         TO   WS-FASE.
+
+       110-BLQ-ENTR.
+           MOVE     DFHBMPRF  TO   TNOMEA    TCURSA    TTURMA
+                                   TENDRA    TBAIRA    TCIDAA
+                                   TESTDA    TMAILA    TFONEA.
+       120-ATU-DATA.
+           EXEC     CICS  ASKTIME
+                          ABSTIME (WS-TIME)
+           END-EXEC
+
+           EXEC     CICS  FORMATTIME
+                          ABSTIME (WS-TIME)
+                          DATESEP ('/')
+                          DDMMYY  (WS-DATA)
+                          TIMESEP (':')
+                          TIME    (WS-HORA)
+           END-EXEC
+
+           MOVE     WS-DATA   TO   TDATAO
+           MOVE     WS-HORA   TO   THORAO
+           MOVE     DFHBMPRF  TO   TDATAA    THORAA.
+
+       130-ATU-TELA.
+           MOVE    'CONSULTA' TO   TOPR1O
+           MOVE     EIBTRNID  TO   TTRNSO
+           MOVE     EIBTRMID  TO   TTERMO
+           MOVE     SPACES    TO   TPCSRO
+
+           MOVE     DFHBMPRF  TO   TOPR1A    TTRNSA
+                                   TTERMA    TMSGMA    TPCSRA
+
+           EXEC     CICS  SEND     MAP      ('MAPDB2C')
+                                   MAPSET   ('MAPDB2C')
+                          FROM              (MAPDB2CO)
+                          ERASE    CURSOR
+           END-EXEC
+
+           EXEC     CICS  SEND     PAGE      END-EXEC
+
+           EXEC     CICS  RETURN   COMMAREA (WS-FASE)
+                                   TRANSID  ('DB2C')
+           END-EXEC.
+
+       200-REC-TELA.
+           EXEC     CICS  RECEIVE MAP     ('MAPDB2C')
+                                  MAPSET  ('MAPDB2C')
+                          INTO            (MAPDB2CI)
+           END-EXEC
+
+           MOVE     LK-FASE   TO   WS-FASE
+
+           IF  EIBAID    =    DFHPF3  AND  WS-FASE  >  0
+               EXEC    CICS   XCTL
+                              PROGRAM     ('PRGDB2M')
+               END-EXEC
+           END-IF
+
+           EVALUATE WS-FASE
+              WHEN  0
+                    GO  TO    100-INI-MAPA
+              WHEN  1
+                    GO  TO    210-CHK-MTRC
+           END-EVALUATE.
+
+       210-CHK-MTRC.
+           EXEC     CICS  BIF      DEEDIT
+                          FIELD   (TMTRCI)
+                          LENGTH  (5)
+           END-EXEC
+
+           IF  TMTRCI   NOT   NUMERIC  OR
+               TMTRCI   =     '00000'
+               MOVE     1     TO   WS-IMSG
+               GO  TO   220-ATU-MSGM.
+
+           MOVE     TMTRCI    TO   MAT-ALU
+
+           EXEC     SQL   SELECT   MAT_ALU,
+                                   NOM_ALU,  CUR_ALU,  TUR_ALU,
+                                   END_ALU,  BAI_ALU,  CID_ALU,
+                                   EST_ALU,  EML_ALU,  TEL_ALU
+
+                          INTO    :MAT-ALU,
+                                  :NOM-ALU, :CUR-ALU, :TUR-ALU,
+                                  :END-ALU, :BAI-ALU, :CID-ALU,
+                                  :EST-ALU, :EML-ALU, :TEL-ALU
+
+                          FROM     DBADB2.TABALU
+
+                          WHERE    MAT_ALU      =     :MAT-ALU
+           END-EXEC
+
+           IF  SQLCODE    =   0
+               MOVE     NOM-ALU   TO   TNOMEO
+               MOVE     CUR-ALU   TO   TCURSO
+               MOVE     TUR-ALU   TO   TTURMO
+               MOVE     END-ALU   TO   TENDRO
+               MOVE     BAI-ALU   TO   TBAIRO
+               MOVE     CID-ALU   TO   TCIDAO
+               MOVE     EST-ALU   TO   TESTDO
+               MOVE     EML-ALU   TO   TMAILO
+               MOVE     TEL-ALU   TO   TFONEO
+
+               MOVE     2         TO   WS-IMSG
+           ELSE
+               MOVE     3         TO   WS-IMSG
+           END-IF.
+
+       220-ATU-MSGM.
+           IF  WS-IMSG  NOT  =   2
+               EXEC     CICS  SEND     CONTROL   ALARM    END-EXEC.
+
+           EVALUATE WS-IMSG
+              WHEN  1
+                    MOVE 'NUMERO DA MATRICULA INVALIDO!'  TO  TMSGMO
+              WHEN  2
+                    MOVE 'CONSULTA BEM SUCEDIDA!       '  TO  TMSGMO
+              WHEN  3
+                    MOVE 'MATRICULA NAO ENCONTRADA!    '  TO  TMSGMO
+           END-EVALUATE
+
+           MOVE     DFHBMPRF  TO   TMTRCA
+           MOVE     -1        TO   TPCSRL
+           MOVE      0        TO   WS-FASE
+           GO  TO   110-BLQ-ENTR.

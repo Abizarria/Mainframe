@@ -1,16 +1,16 @@
-//JCRIADCL JOB DBADB2JC,MSGCLASS=A,CLASS=C,NOTIFY=ALU0407               00010001
-//JOBLIB   DD  DSN=SYS2.DB2.SDSNLOAD,DISP=SHR                           00020001
-//*------------------------------------------------                     00030000
-//* CRIACAO DE BOOKS DB2 - AMBIENTE DESENVOLVIMENTO                     00040000
-//*------------------------------------------------                     00050000
-//DCLGEN  EXEC PGM=IKJEFT01,DYNAMNBR=20,COND=(4,LT)                     00060000
-//SYSTSPRT DD SYSOUT=*                                                  00070000
-//SYSTSIN  DD *                                                         00080000
-DSN SYSTEM(DB2N)                                                        00090000
-DCLGEN TABLE(DBADB2.TABALU)         +                                   00100002
-LIBRARY('ABS.FONTES.BOOKS(DB2ALU)') +                                   00110002
-ACTION(REPLACE)                     +                                   00120002
-LANGUAGE(COB2)                      +                                   00130002
-STRUCTURE(DB2ALU)                   +                                   00140002
-APOST                                                                   00150000
-//*                                                                     00160002
+//JCRIADCL JOB DBADB2JC,MSGCLASS=A,CLASS=C,NOTIFY=ALU0407
+//JOBLIB   DD  DSN=SYS2.DB2.SDSNLOAD,DISP=SHR
+//*------------------------------------------------
+//* CRIACAO DE BOOKS DB2 - AMBIENTE DESENVOLVIMENTO
+//*------------------------------------------------
+//DCLGEN  EXEC PGM=IKJEFT01,DYNAMNBR=20,COND=(4,LT)
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD *
+DSN SYSTEM(DB2N)
+DCLGEN TABLE(DBADB2.TABALU)         +
+LIBRARY('ABS.FONTES.BOOKS(DB2ALU)') +
+ACTION(REPLACE)                     +
+LANGUAGE(COB2)                      +
+STRUCTURE(DB2ALU)                   +
+APOST
+//*

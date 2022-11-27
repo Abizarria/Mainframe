@@ -1,128 +1,86 @@
-MAPDB2C DFHMSD TYPE=MAP,MODE=INOUT,CTRL=(FREEKB,FRSET),                X00010002
-               TIOAPFX=YES,MAPATTS=COLOR,LANG=COBOL                     00020002
-*=====================================================================  00030000
-MAPDB2C DFHMDI SIZE=(24,80),LINE=01,COLUMN=01                           00040000
-*---------------------------------------------------------------------  00050000
-        DFHMDF POS=(02,01),LENGTH=05,ATTRB=PROT,COLOR=YELLOW,          X00060001
-               INITIAL='DATA:'                                          00070000
-                                                                        00080000
-TDATA   DFHMDF POS=(02,07),LENGTH=08,ATTRB=PROT,COLOR=YELLOW            00090001
-                                                                        00100000
-        DFHMDF POS=(02,22),LENGTH=40,ATTRB=PROT,COLOR=YELLOW,          X00110001
-               INITIAL='FUTURE SCHOOL - CADASTRO DE ALUNOS (DB2)'       00120000
-                                                                        00130000
-        DFHMDF POS=(02,68),LENGTH=05,ATTRB=PROT,COLOR=YELLOW,          X00140001
-               INITIAL='HORA:'                                          00150000
-                                                                        00160000
-THORA   DFHMDF POS=(02,74),LENGTH=05,ATTRB=PROT,COLOR=YELLOW            00170001
-                                                                        00180000
-        DFHMDF POS=(04,01),LENGTH=06,ATTRB=PROT,COLOR=YELLOW,          X00190001
-               INITIAL='TRANS:'                                         00200000
-                                                                        00210001
-TTRNS   DFHMDF POS=(04,08),LENGTH=04,ATTRB=PROT,COLOR=YELLOW            00220001
-*---------------------------------------------------------------------  00230001
-        DFHMDF POS=(04,29),LENGTH=11,ATTRB=PROT,COLOR=TURQUOISE,       X00240001
-               INITIAL='OPERACAO ->'                                    00250000
-                                                                        00260000
-TOPR1   DFHMDF POS=(04,41),LENGTH=09,ATTRB=PROT,COLOR=GREEN            X00270001
-                                                                        00280000
-        DFHMDF POS=(04,68),LENGTH=05,ATTRB=PROT,COLOR=YELLOW,          X00290001
-               INITIAL='TERM:'                                          00300000
-                                                                        00310000
-TTERM   DFHMDF POS=(04,74),LENGTH=05,ATTRB=PROT,                       X00320000
-               COLOR=YELLOW                                             00330000
-*---------------------------------------------------------------------  00340000
-        DFHMDF POS=(08,01),LENGTH=10,ATTRB=PROT,COLOR=TURQUOISE,       X00350001
-               INITIAL='MATRICULA:'                                     00360000
-                                                                        00370000
-TMTRC   DFHMDF POS=(08,12),LENGTH=05,ATTRB=(UNPROT,IC),COLOR=GREEN,    X00380001
-               INITIAL='00000'                                          00390000
-                                                                        00400000
-        DFHMDF POS=(08,18),ATTRB=ASKIP                                  00410000
-*---------------------------------------------------------------------  00420000
-        DFHMDF POS=(11,01),LENGTH=10,ATTRB=PROT,COLOR=TURQUOISE,       X00430001
-               INITIAL='NOME.....:'                                     00440000
-                                                                        00450000
-TNOME   DFHMDF POS=(11,12),LENGTH=30,ATTRB=PROT,COLOR=GREEN             00460003
-                                                                        00470000
-        DFHMDF POS=(11,43),ATTRB=ASKIP                                  00480000
-*---------------------------------------------------------------------  00490000
-        DFHMDF POS=(13,01),LENGTH=10,ATTRB=PROT,COLOR=TURQUOISE,       X00500001
-               INITIAL='CURSO....:'                                     00510000
-                                                                        00520000
-TCURS   DFHMDF POS=(13,12),LENGTH=20,ATTRB=PROT,COLOR=GREEN             00530003
-                                                                        00540000
-        DFHMDF POS=(13,33),ATTRB=ASKIP                                  00550000
-*---------------------------------------------------------------------  00560000
-        DFHMDF POS=(13,47),LENGTH=10,ATTRB=PROT,COLOR=TURQUOISE,       X00570001
-               INITIAL='TURMA....:'                                     00580000
-                                                                        00590000
-TTURM   DFHMDF POS=(13,58),LENGTH=15,ATTRB=PROT,COLOR=GREEN             00600003
-                                                                        00610000
-        DFHMDF POS=(13,74),ATTRB=ASKIP                                  00620000
-*---------------------------------------------------------------------  00630000
-        DFHMDF POS=(15,01),LENGTH=10,ATTRB=PROT,COLOR=TURQUOISE,       X00640001
-               INITIAL='ENDERECO.:'                                     00650000
-                                                                        00660000
-TENDR   DFHMDF POS=(15,12),LENGTH=30,ATTRB=PROT,COLOR=GREEN             00670003
-                                                                        00680000
-        DFHMDF POS=(15,43),ATTRB=ASKIP                                  00690000
-*---------------------------------------------------------------------  00700000
-        DFHMDF POS=(15,47),LENGTH=10,ATTRB=PROT,COLOR=TURQUOISE,       X00710001
-               INITIAL='BAIRRO...:'                                     00720000
-                                                                        00730000
-TBAIR   DFHMDF POS=(15,58),LENGTH=20,ATTRB=PROT,COLOR=GREEN             00740004
-                                                                        00750000
-        DFHMDF POS=(15,79),ATTRB=ASKIP                                  00760000
-*---------------------------------------------------------------------  00770000
-        DFHMDF POS=(17,01),LENGTH=10,ATTRB=PROT,COLOR=TURQUOISE,       X00780001
-               INITIAL='CIDADE...:'                                     00790000
-                                                                        00800000
-TCIDA   DFHMDF POS=(17,12),LENGTH=25,ATTRB=PROT,COLOR=GREEN             00810004
-                                                                        00820000
-        DFHMDF POS=(17,38),ATTRB=ASKIP                                  00830000
-*---------------------------------------------------------------------  00840000
-        DFHMDF POS=(17,47),LENGTH=10,ATTRB=PROT,COLOR=TURQUOISE,       X00850001
-               INITIAL='ESTADO...:'                                     00860000
-                                                                        00870000
-TESTD   DFHMDF POS=(17,58),LENGTH=02,ATTRB=PROT,COLOR=GREEN             00880004
-                                                                        00890000
-        DFHMDF POS=(17,61),ATTRB=ASKIP                                  00900000
-*---------------------------------------------------------------------  00910000
-        DFHMDF POS=(19,01),LENGTH=10,ATTRB=PROT,COLOR=TURQUOISE,       X00920001
-               INITIAL='E-MAIL...:'                                     00930000
-                                                                        00940000
-TMAIL   DFHMDF POS=(19,12),LENGTH=30,ATTRB=PROT,COLOR=GREEN             00950004
-                                                                        00960000
-        DFHMDF POS=(19,43),ATTRB=ASKIP                                  00970000
-*---------------------------------------------------------------------  00980000
-        DFHMDF POS=(19,47),LENGTH=10,ATTRB=PROT,COLOR=TURQUOISE,       X00990001
-               INITIAL='TELEFONE.:'                                     01000000
-                                                                        01010000
-TFONE   DFHMDF POS=(19,58),LENGTH=15,ATTRB=PROT,COLOR=GREEN             01020004
-                                                                        01030000
-        DFHMDF POS=(19,74),ATTRB=ASKIP                                  01040000
-*---------------------------------------------------------------------  01050000
-        DFHMDF POS=(23,01),LENGTH=11,ATTRB=PROT,COLOR=YELLOW,          X01060004
-               INITIAL='MENSAGEM ->'                                    01070000
-                                                                        01080000
-TMSGM   DFHMDF POS=(23,13),LENGTH=60,ATTRB=PROT,COLOR=RED               01090004
-                                                                        01100000
-TPCSR   DFHMDF POS=(23,78),LENGTH=01,ATTRB=PROT                         01110007
-*=====================================================================  01120000
-RSPDB2C DFHMDI SIZE=(01,67),LINE=23,COLUMN=13                           01130000
-*---------------------------------------------------------------------  01140000
-        DFHMDF POS=(01,01),LENGTH=10,ATTRB=PROT,COLOR=RED,             X01150004
-               INITIAL='CONFIRMA A'                                     01160000
-                                                                        01170000
-TOPR2   DFHMDF POS=(01,12),LENGTH=09,ATTRB=PROT,COLOR=RED               01180004
-                                                                        01190000
-        DFHMDF POS=(01,22),LENGTH=06,ATTRB=PROT,COLOR=RED,             X01200004
-               INITIAL='(S/N)?'                                         01210000
-                                                                        01220000
-TRESP   DFHMDF POS=(01,29),LENGTH=01,ATTRB=(UNPROT,IC),COLOR=RED        01230004
-                                                                        01240000
-        DFHMDF POS=(01,31),ATTRB=ASKIP                                  01250000
-*=====================================================================  01260000
-        DFHMSD TYPE=FINAL                                               01270000
-               END                                                      01280000
+MAPDB2C DFHMSD TYPE=MAP,MODE=INOUT,CTRL=(FREEKB,FRSET),                X
+               TIOAPFX=YES,MAPATTS=COLOR,LANG=COBOL
+*=====================================================================
+MAPDB2C DFHMDI SIZE=(24,80),LINE=01,COLUMN=01
+*
+        DFHMDF POS=(02,01),LENGTH=05,COLOR=YELLOW,INITIAL='DATA:'
+TDATA   DFHMDF POS=(02,07),LENGTH=08,COLOR=YELLOW
+        DFHMDF POS=(02,22),LENGTH=40,COLOR=YELLOW,                     X
+               INITIAL='FUTURE SCHOOL - CADASTRO DE ALUNOS (DB2)'
+        DFHMDF POS=(02,68),LENGTH=05,COLOR=YELLOW,INITIAL='HORA:'
+THORA   DFHMDF POS=(02,74),LENGTH=05,COLOR=YELLOW
+        DFHMDF POS=(04,01),LENGTH=06,COLOR=YELLOW,INITIAL='TRANS:'
+TTRNS   DFHMDF POS=(04,08),LENGTH=04,COLOR=YELLOW
+*
+        DFHMDF POS=(04,29),LENGTH=11,COLOR=TURQUOISE,                  X
+               INITIAL='OPERACAO ->'
+TOPR1   DFHMDF POS=(04,41),LENGTH=09,COLOR=GREEN
+        DFHMDF POS=(04,68),LENGTH=05,COLOR=YELLOW,INITIAL='TERM:'
+TTERM   DFHMDF POS=(04,74),LENGTH=05,COLOR=YELLOW
+*---------------------------------------------------------------------
+        DFHMDF POS=(08,01),LENGTH=10,COLOR=TURQUOISE,                  X
+               INITIAL='MATRICULA:'
+TMTRC   DFHMDF POS=(08,12),LENGTH=05,ATTRB=(UNPROT,IC),COLOR=GREEN,    X
+               INITIAL='00000'
+        DFHMDF POS=(08,18),ATTRB=ASKIP
+*
+        DFHMDF POS=(11,01),LENGTH=10,COLOR=TURQUOISE,                  X
+               INITIAL='NOME.....:'
+TNOME   DFHMDF POS=(11,12),LENGTH=30,COLOR=GREEN
+        DFHMDF POS=(11,43),ATTRB=ASKIP
+*
+        DFHMDF POS=(13,01),LENGTH=10,COLOR=TURQUOISE,                  X
+               INITIAL='CURSO....:'
+TCURS   DFHMDF POS=(13,12),LENGTH=20,COLOR=GREEN
+        DFHMDF POS=(13,33),ATTRB=ASKIP
+*
+        DFHMDF POS=(13,47),LENGTH=10,COLOR=TURQUOISE,                  X
+               INITIAL='TURMA....:'
+TTURM   DFHMDF POS=(13,58),LENGTH=15,COLOR=GREEN
+        DFHMDF POS=(13,74),ATTRB=ASKIP
+*
+        DFHMDF POS=(15,01),LENGTH=10,COLOR=TURQUOISE,                  X
+               INITIAL='ENDERECO.:'
+TENDR   DFHMDF POS=(15,12),LENGTH=30,COLOR=GREEN
+        DFHMDF POS=(15,43),ATTRB=ASKIP
+*
+        DFHMDF POS=(15,47),LENGTH=10,COLOR=TURQUOISE,                  X
+               INITIAL='BAIRRO...:'
+TBAIR   DFHMDF POS=(15,58),LENGTH=20,COLOR=GREEN
+        DFHMDF POS=(15,79),ATTRB=ASKIP
+*
+        DFHMDF POS=(17,01),LENGTH=10,COLOR=TURQUOISE,                  X
+               INITIAL='CIDADE...:'
+TCIDA   DFHMDF POS=(17,12),LENGTH=25,COLOR=GREEN
+        DFHMDF POS=(17,38),ATTRB=ASKIP
+*
+        DFHMDF POS=(17,47),LENGTH=10,COLOR=TURQUOISE,                  X
+               INITIAL='ESTADO...:'
+TESTD   DFHMDF POS=(17,58),LENGTH=02,COLOR=GREEN
+        DFHMDF POS=(17,61),ATTRB=ASKIP
+*
+        DFHMDF POS=(19,01),LENGTH=10,COLOR=TURQUOISE,                  X
+               INITIAL='E-MAIL...:'
+TMAIL   DFHMDF POS=(19,12),LENGTH=30,COLOR=GREEN
+        DFHMDF POS=(19,43),ATTRB=ASKIP
+*
+        DFHMDF POS=(19,47),LENGTH=10,COLOR=TURQUOISE,                  X
+               INITIAL='TELEFONE.:'
+TFONE   DFHMDF POS=(19,58),LENGTH=15,COLOR=GREEN
+        DFHMDF POS=(19,74),ATTRB=ASKIP
+*
+        DFHMDF POS=(23,01),LENGTH=11,COLOR=YELLOW,                     X
+               INITIAL='MENSAGEM ->'
+TMSGM   DFHMDF POS=(23,13),LENGTH=60,COLOR=RED
+TPCSR   DFHMDF POS=(23,78),LENGTH=01,ATTRB=PROT,INITIAL=' '
+*=====================================================================
+RSPDB2C DFHMDI SIZE=(01,67),LINE=23,COLUMN=13
+*
+        DFHMDF POS=(01,01),LENGTH=10,COLOR=RED,INITIAL='CONFIRMA A'
+TOPR2   DFHMDF POS=(01,12),LENGTH=09,COLOR=RED
+        DFHMDF POS=(01,22),LENGTH=06,COLOR=RED,INITIAL='(S/N)?'
+TRESP   DFHMDF POS=(01,29),LENGTH=01,ATTRB=(UNPROT,IC),COLOR=RED
+        DFHMDF POS=(01,31),ATTRB=ASKIP
+*=====================================================================
+        DFHMSD TYPE=FINAL
+               END

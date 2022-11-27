@@ -1,0 +1,226 @@
+       IDENTIFICATION        DIVISION.
+       PROGRAM-ID.           PRGDB2R.
+       AUTHOR.               ADILSON BIZARRIA.
+       INSTALLATION.         FUTURE SCHOOL.
+       DATE-WRITTEN.         11/23/2022.
+       DATE-COMPILED.
+      *--------------------------------------*
+      * DB2 - CADASTRO DE ALUNOS (RELATORIO) *
+      *--------------------------------------*
+       ENVIRONMENT           DIVISION.
+       CONFIGURATION         SECTION.
+
+       SOURCE-COMPUTER.      IBM-3090.
+       OBJECT-COMPUTER.      IBM-3090.
+
+       SPECIAL-NAMES.
+                             DECIMAL-POINT IS COMMA.
+
+       INPUT-OUTPUT          SECTION.
+
+       FILE-CONTROL.
+
+       DATA                  DIVISION.
+       FILE                  SECTION.
+
+       WORKING-STORAGE       SECTION.
+
+       77  WS-TIME           PIC S9(15)  COMP-3.
+       77  WS-DATA           PIC  X(08).
+       77  WS-HORA           PIC  X(05).
+       77  WS-PAGE           PIC  9(01).
+       77  WS-LINE           PIC  9(02).
+
+       01  WS-COMM.
+           03  WS-MATI       PIC  9(05).
+           03  WS-MATF       PIC  9(05).
+
+           COPY    DFHAID.
+           COPY    DFHBMSCA.
+           COPY    MAPDB2R.
+
+           EXEC    SQL       INCLUDE    SQLCA     END-EXEC.
+           EXEC    SQL       INCLUDE    DB2ALU    END-EXEC.
+
+       LINKAGE               SECTION.
+
+       01  DFHCOMMAREA.
+           03  LK-MATI       PIC  9(05).
+           03  LK-MATF       PIC  9(05).
+
+       PROCEDURE             DIVISION.
+
+       000-INI-PROG.
+           IF  EIBCALEN  =   0
+               GO  TO        100-INI-MAPA
+           ELSE
+               GO  TO        200-REC-TELA
+           END-IF.
+
+       100-INI-MAPA.
+           MOVE     1         TO   WS-PAGE
+      *
+      *    EXEC     SQL   DECLARE    CSR_DSC  CURSOR
+      *             FOR   SELECT     MAT_ALU,
+      *                              NOM_ALU, CUR_ALU, TUR_ALU,
+      *                              END_ALU, BAI_ALU, CID_ALU,
+      *                              EST_ALU, EML_ALU, TEL_ALU
+      *                   FROM       DBADB2.TABALU
+      *                   WHERE      MAT_ALU  <  :MAT-ALU
+      *                   ORDER  BY  MAT_ALU  DESC
+      *    END-EXEC.
+
+       110-ATU-DATA.
+           EXEC     CICS  ASKTIME
+                          ABSTIME (WS-TIME)
+           END-EXEC
+
+           EXEC     CICS  FORMATTIME
+                          ABSTIME (WS-TIME)
+                          DATESEP ('/')
+                          DDMMYY  (WS-DATA)
+                          TIMESEP (':')
+                          TIME    (WS-HORA)
+           END-EXEC
+
+           MOVE     WS-DATA   TO   TDATAO
+           MOVE     WS-HORA   TO   THORAO
+           MOVE     DFHBMPRF  TO   TDATAA    THORAA.
+
+       130-ATU-TELA.
+           MOVE     EIBTRNID  TO   TTRNSO
+           MOVE     EIBTRMID  TO   TTERMO
+
+           MOVE     DFHBMPRF  TO   TTRNSA    TTERMA    TPCSRA
+
+           EXEC     CICS  SEND     MAP      ('CABDB2R')
+                                   MAPSET   ('MAPDB2R')
+                          FROM              (CABDB2RO)
+                          ACCUM    ERASE
+           END-EXEC
+
+           EXEC     CICS  SEND     MAP      ('CB0DB2R')
+                                   MAPSET   ('MAPDB2R')
+                          FROM              (CB0DB2RO)
+                                   ACCUM
+           END-EXEC
+
+           EXEC     CICS  SEND     MAP      ('CB1DB2R')
+                                   MAPSET   ('MAPDB2R')
+                          FROM              (CB1DB2RO)
+                                   ACCUM
+           END-EXEC
+
+           EXEC     SQL   DECLARE    CSR_ASC  CURSOR
+                    FOR   SELECT     MAT_ALU,
+                                     NOM_ALU, CUR_ALU, TUR_ALU,
+                                     END_ALU, BAI_ALU, CID_ALU,
+                                     EST_ALU, EML_ALU, TEL_ALU
+                          FROM       DBADB2.TABALU
+                          WHERE      MAT_ALU  >  :MAT-ALU
+                          ORDER  BY  MAT_ALU
+           END-EXEC.
+
+           EXEC     SQL   OPEN     CSR_ASC   END-EXEC
+
+           MOVE     DFHBMPRF  TO   TMTRCA
+                                   TNOMEA   TCURSA   TTURMA
+                                   TENDRA   TBAIRA   TCIDAA
+                                   TESTDA   TMAILA   TFONEA
+           MOVE     ZEROS      TO  MAT-ALU
+
+           PERFORM  140-LIST-ALU   UNTIL     WS-LINE   >   13
+                                   OR        SQLCODE   =   100
+           PERFORM  150-ATU-MSGM
+
+           EXEC     SQL   CLOSE    CSR_ASC   END-EXEC
+
+           EXEC     CICS  SEND     PAGE      END-EXEC
+
+           EXEC     CICS  RETURN   COMMAREA (WS-COMM)
+                                   TRANSID  ('DB2R')
+           END-EXEC.
+
+       140-LIST-ALU.
+           EXEC     SQL   FETCH    CSR_ASC
+                          INTO    :MAT-ALU,
+                                  :NOM-ALU, :CUR-ALU, :TUR-ALU,
+                                  :END-ALU, :BAI-ALU, :CID-ALU,
+                                  :EST-ALU, :EML-ALU, :TEL-ALU
+           END-EXEC
+
+           IF  SQLCODE   NOT  =  100
+      *        MOVE     MAT-ALU   TO   TMTRCO   WS-MATF
+               MOVE     NOM-ALU   TO   TNOMEO
+               MOVE     CUR-ALU   TO   TCURSO
+               MOVE     TUR-ALU   TO   TTURMO
+      *        MOVE     END-ALU   TO   TENDRO
+      *        MOVE     BAI-ALU   TO   TBAIRO
+      *        MOVE     CID-ALU   TO   TCIDAO
+      *        MOVE     EST-ALU   TO   TESTDO
+      *        MOVE     EML-ALU   TO   TMAILO
+      *        MOVE     TEL-ALU   TO   TFONEO
+      *
+      *        MOVE     DFHBMPRF  TO   TMTRCA
+      *                                TNOMEA   TCURSA   TTURMA
+      *                                TENDRA   TBAIRA   TCIDAA
+      *                                TESTDA   TMAILA   TFONEA
+               ADD      1         TO   WS-LINE
+
+      *        EXEC     CICS  SEND     MAP      ('DT0DB2R')
+      *                                MAPSET   ('MAPDB2R')
+      *                       FROM              (DT0DB2RO)
+      *                                ACCUM
+      *        END-EXEC
+
+               EXEC     CICS  SEND     MAP      ('DT1DB2R')
+                                       MAPSET   ('MAPDB2R')
+                              FROM              (DT1DB2RO)
+                                       ACCUM
+               END-EXEC
+
+               IF  WS-LINE   =    01
+                   MOVE      MAT-ALU   TO   WS-MATI.
+
+       150-ATU-MSGM.
+           IF  WS-LINE   =   ZEROS
+               MOVE    'O CADASTRO DE ALUNOS ESTA VAZIO!'  TO  TMSGMO
+           ELSE
+               MOVE    'PF3-MENU, PF7-ACIMA, PF8-ABAIXO, PF10-ESQUERDA,
+      -                'PF11-DIREITA'                      TO  TMSGMO
+           END-IF
+
+           MOVE     SPACES    TO   TPCSRO
+           MOVE     DFHBMPRF  TO   TMSGMA   TPCSRA
+           MOVE     DFHBMPRF  TO   TMSGMA
+           MOVE     -1        TO   TPCSRL
+
+           EXEC     CICS  SEND     MAP     ('RODDB2R')
+                                   MAPSET  ('MAPDB2R')
+                          FROM             (RODDB2RO)
+                          ACCUM    CURSOR
+           END-EXEC.
+
+       200-REC-TELA.
+           MOVE     LK-MATI   TO   WS-MATI
+           MOVE     LK-MATF   TO   WS-MATF
+
+      *    MOVE     ZEROS     TO   MAT-ALU
+
+
+      *    IF  WS-MATI   =    ZEROS
+      *        GO  TO         300-FIM-PROG.
+
+           EVALUATE EIBAID
+              WHEN  DFHPF3
+                    GO  TO   300-FIM-PROG
+              WHEN  DFHPF5
+                    GO  TO   100-INI-MAPA
+              WHEN  OTHER
+                    GO  TO   300-FIM-PROG
+           END-EVALUATE.
+
+       300-FIM-PROG.
+           EXEC     CICS      XCTL
+                    PROGRAM  ('PRGDB2M')
+           END-EXEC.
