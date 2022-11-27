@@ -39,14 +39,35 @@
            COPY    DFHBMSCA.
            COPY    MAPDB2R.
 
-           EXEC    SQL       INCLUDE    SQLCA     END-EXEC.
-           EXEC    SQL       INCLUDE    DB2ALU    END-EXEC.
+           EXEC    SQL       INCLUDE    SQLCA    END-EXEC.
+           EXEC    SQL       INCLUDE    DB2ALU   END-EXEC.
+
+           EXEC    SQL       DECLARE    CSR_ASC  CURSOR
+                   FOR       SELECT     MAT_ALU,
+                                        NOM_ALU, CUR_ALU, TUR_ALU,
+                                        END_ALU, BAI_ALU, CID_ALU,
+                                        EST_ALU, EML_ALU, TEL_ALU
+                             FROM       DBADB2.TABALU
+                             WHERE      MAT_ALU  >  :MAT-ALU
+                             ORDER  BY  MAT_ALU
+           END-EXEC.
+       
+           EXEC    SQL       DECLARE    CSR_DSC  CURSOR
+                   FOR       SELECT     MAT_ALU,
+                                        NOM_ALU, CUR_ALU, TUR_ALU,
+                                        END_ALU, BAI_ALU, CID_ALU,
+                                        EST_ALU, EML_ALU, TEL_ALU
+                             FROM       DBADB2.TABALU
+                             WHERE      MAT_ALU  <  :MAT-ALU
+                             ORDER  BY  MAT_ALU  DESC
+           END-EXEC.
 
        LINKAGE               SECTION.
 
        01  DFHCOMMAREA.
            03  LK-MATI       PIC  9(05).
            03  LK-MATF       PIC  9(05).
+
 
        PROCEDURE             DIVISION.
 
@@ -58,18 +79,9 @@
            END-IF.
 
        100-INI-MAPA.
-           MOVE     1         TO   WS-PAGE
-      *
-      *    EXEC     SQL   DECLARE    CSR_DSC  CURSOR
-      *             FOR   SELECT     MAT_ALU,
-      *                              NOM_ALU, CUR_ALU, TUR_ALU,
-      *                              END_ALU, BAI_ALU, CID_ALU,
-      *                              EST_ALU, EML_ALU, TEL_ALU
-      *                   FROM       DBADB2.TABALU
-      *                   WHERE      MAT_ALU  <  :MAT-ALU
-      *                   ORDER  BY  MAT_ALU  DESC
-      *    END-EXEC.
-
+           MOVE     1         TO   WS-PAGE 
+           MOVE     ZEROS     TO   WS-COMM.
+           
        110-ATU-DATA.
            EXEC     CICS  ASKTIME
                           ABSTIME (WS-TIME)
@@ -87,11 +99,9 @@
            MOVE     WS-HORA   TO   THORAO
            MOVE     DFHBMPRF  TO   TDATAA    THORAA.
 
-       130-ATU-TELA.
+       120-SEND-CAB.
            MOVE     EIBTRNID  TO   TTRNSO
            MOVE     EIBTRMID  TO   TTERMO
-
-           MOVE     DFHBMPRF  TO   TTRNSA    TTERMA    TPCSRA
 
            EXEC     CICS  SEND     MAP      ('CABDB2R')
                                    MAPSET   ('MAPDB2R')
@@ -105,36 +115,52 @@
                                    ACCUM
            END-EXEC
 
-           EXEC     CICS  SEND     MAP      ('CB1DB2R')
-                                   MAPSET   ('MAPDB2R')
-                          FROM              (CB1DB2RO)
-                                   ACCUM
-           END-EXEC
+           EVALUATE WS-PAGE
+              WHEN  1
+                    EXEC     CICS  SEND     MAP      ('CB1DB2R')
+                                            MAPSET   ('MAPDB2R')
+                                   FROM              (CB1DB2RO)
+                                            ACCUM
+                    END-EXEC
+              WHEN  2
+                    EXEC     CICS  SEND     MAP      ('CB2DB2R')
+                                            MAPSET   ('MAPDB2R')
+                                   FROM              (CB2DB2RO)
+                                            ACCUM
+                    END-EXEC
+              WHEN  3
+                    EXEC     CICS  SEND     MAP      ('CB3DB2R')
+                                            MAPSET   ('MAPDB2R')
+                                   FROM              (CB3DB2RO)
+                                            ACCUM
+                    END-EXEC
+           END-EVALUATE 
 
-           EXEC     SQL   DECLARE    CSR_ASC  CURSOR
-                    FOR   SELECT     MAT_ALU,
-                                     NOM_ALU, CUR_ALU, TUR_ALU,
-                                     END_ALU, BAI_ALU, CID_ALU,
-                                     EST_ALU, EML_ALU, TEL_ALU
-                          FROM       DBADB2.TABALU
-                          WHERE      MAT_ALU  >  :MAT-ALU
-                          ORDER  BY  MAT_ALU
-           END-EXEC.
+       130-ATU-TELA.
+           MOVE     DFHBMPRF  TO   TTRNSA    TTERMA    TPCSRA
 
-           EXEC     SQL   OPEN     CSR_ASC   END-EXEC
-
+           MOVE     SPACES    TO   TMTRCO
+                                   TNOMEO   TCURSO   TTURMO
+                                   TENDRO   TBAIRO   TCIDAO
+                                   TESTDO   TMAILO   TFONEO
+                                   
            MOVE     DFHBMPRF  TO   TMTRCA
                                    TNOMEA   TCURSA   TTURMA
                                    TENDRA   TBAIRA   TCIDAA
                                    TESTDA   TMAILA   TFONEA
-           MOVE     ZEROS      TO  MAT-ALU
+
+           MOVE     ZEROS     TO   WS-LINE 
+           MOVE     WS-MATI   TO   MAT-ALU
+           
+           EXEC     SQL   OPEN     CSR_ASC   END-EXEC
 
            PERFORM  140-LIST-ALU   UNTIL     WS-LINE   >   13
-                                   OR        SQLCODE   =   100
-           PERFORM  150-ATU-MSGM
+                                   OR        SQLCODE  NOT  =  0
 
            EXEC     SQL   CLOSE    CSR_ASC   END-EXEC
 
+           PERFORM  150-ATU-MSGM
+           
            EXEC     CICS  SEND     PAGE      END-EXEC
 
            EXEC     CICS  RETURN   COMMAREA (WS-COMM)
@@ -149,23 +175,30 @@
                                   :EST-ALU, :EML-ALU, :TEL-ALU
            END-EXEC
 
-           IF  SQLCODE   NOT  =  100
+           IF  SQLCODE   =    0 
       *        MOVE     MAT-ALU   TO   TMTRCO   WS-MATF
-               MOVE     NOM-ALU   TO   TNOMEO
-               MOVE     CUR-ALU   TO   TCURSO
-               MOVE     TUR-ALU   TO   TTURMO
-      *        MOVE     END-ALU   TO   TENDRO
-      *        MOVE     BAI-ALU   TO   TBAIRO
-      *        MOVE     CID-ALU   TO   TCIDAO
-      *        MOVE     EST-ALU   TO   TESTDO
-      *        MOVE     EML-ALU   TO   TMAILO
-      *        MOVE     TEL-ALU   TO   TFONEO
-      *
-      *        MOVE     DFHBMPRF  TO   TMTRCA
-      *                                TNOMEA   TCURSA   TTURMA
-      *                                TENDRA   TBAIRA   TCIDAA
-      *                                TESTDA   TMAILA   TFONEA
+      
+               EVALUATE WS-PAGE
+                  WHEN  1
+                        MOVE     NOM-ALU   TO   TNOMEO
+                        MOVE     CUR-ALU   TO   TCURSO
+                        MOVE     TUR-ALU   TO   TTURMO
+                  WHEN  2
+                        MOVE     END-ALU   TO   TENDRO
+                        MOVE     BAI-ALU   TO   TBAIRO
+                        MOVE     TEL-ALU   TO   TFONEO
+                  WHEN  3
+                        MOVE     CID-ALU   TO   TCIDAO
+                        MOVE     EST-ALU   TO   TESTDO
+                        MOVE     EML-ALU   TO   TMAILO
+               END-EVALUATE
+       
                ADD      1         TO   WS-LINE
+               
+               MOVE     DFHBMPRF  TO   TMTRCA
+                                       TNOMEA   TCURSA   TTURMA
+                                       TENDRA   TBAIRA   TCIDAA
+                                       TESTDA   TMAILA   TFONEA
 
       *        EXEC     CICS  SEND     MAP      ('DT0DB2R')
       *                                MAPSET   ('MAPDB2R')
@@ -183,7 +216,7 @@
                    MOVE      MAT-ALU   TO   WS-MATI.
 
        150-ATU-MSGM.
-           IF  WS-LINE   =   ZEROS
+           IF  WS-LINE   =   0    
                MOVE    'O CADASTRO DE ALUNOS ESTA VAZIO!'  TO  TMSGMO
            ELSE
                MOVE    'PF3-MENU, PF7-ACIMA, PF8-ABAIXO, PF10-ESQUERDA,
@@ -191,9 +224,8 @@
            END-IF
 
            MOVE     SPACES    TO   TPCSRO
-           MOVE     DFHBMPRF  TO   TMSGMA   TPCSRA
-           MOVE     DFHBMPRF  TO   TMSGMA
            MOVE     -1        TO   TPCSRL
+           MOVE     DFHBMPRF  TO   TMSGMA   TPCSRA
 
            EXEC     CICS  SEND     MAP     ('RODDB2R')
                                    MAPSET  ('MAPDB2R')
@@ -205,19 +237,19 @@
            MOVE     LK-MATI   TO   WS-MATI
            MOVE     LK-MATF   TO   WS-MATF
 
-      *    MOVE     ZEROS     TO   MAT-ALU
-
-
-      *    IF  WS-MATI   =    ZEROS
-      *        GO  TO         300-FIM-PROG.
-
            EVALUATE EIBAID
               WHEN  DFHPF3
-                    GO  TO   300-FIM-PROG
-              WHEN  DFHPF5
-                    GO  TO   100-INI-MAPA
+                    GO  TO    300-FIM-PROG
+      *       WHEN  DFHPF7
+      *             GO  TO    200-PF07-000
+      *       WHEN  DFHPF8
+      *             GO  TO    200-PF08-000
+      *       WHEN  DFHPF10
+      *             GO  TO    300-PF10-000
+      *       WHEN  DFHPF11
+      *             GO  TO    300-PF11-000
               WHEN  OTHER
-                    GO  TO   300-FIM-PROG
+                    GO  TO    100-INI-MAPA
            END-EVALUATE.
 
        300-FIM-PROG.
