@@ -23,7 +23,7 @@
       * COBOL DECLARATION FOR TABLE DBADB2.TABALU                      *
       ******************************************************************
        01  DB2ALU.
-           10 MAT-ALU              PIC S9(4) USAGE COMP.
+           10 MAT-ALU              PIC S9(5) USAGE COMP.
            10 NOM-ALU              PIC X(30).
            10 CUR-ALU              PIC X(20).
            10 TUR-ALU              PIC X(15).
