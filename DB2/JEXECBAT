@@ -1,0 +1,20 @@
+//JEXECBAT JOB DBADB2JC,MSGCLASS=A,CLASS=C,NOTIFY=DBADB2
+//*                                                  
+//JOBLIB  DD  DSN=SYS2.DB2.SDSNLOAD,DISP=SHR         
+//*                                                  
+//*       EXECUTA PROGRAMA
+//*
+//PH01S02 EXEC PGM=IKJEFT01,DYNAMNBR=20,COND=(4,LT)  
+//SYSTSPRT DD  SYSOUT=*                              
+//SYSTSIN  DD  *                                     
+ DSN SYSTEM(DB2N)                                    
+ RUN PROGRAM(PRGDB2B) PLAN(PRGDB2B) -   
+     LIB('IBMUSER.PGMS.LOADLIB')        
+//SYSPRINT DD  SYSOUT=*                 
+//SYSUDUMP DD  SYSOUT=*
+//*
+//*        ENVIA DELTA (CODIGO) DE EXECUCAO
+//*
+//SYSIN    DD  *
+00030
+//*                             

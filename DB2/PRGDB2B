@@ -1,0 +1,200 @@
+       IDENTIFICATION        DIVISION.
+       PROGRAM-ID.           PRGDB2B.
+       AUTHOR.               ADILSON BIZARRIA.
+       INSTALLATION.         FUTURE SCHOOL.
+       DATE-WRITTEN.         12/01/2022.
+       DATE-COMPILED.
+      *-------------------------------------------------*
+      * DB2 - BATCH (SELECT SUM, MAX, MIN, AVG E COUNT) *
+      *-------------------------------------------------*
+       ENVIRONMENT           DIVISION.
+       CONFIGURATION         SECTION.
+
+       SOURCE-COMPUTER.      IBM-3090.
+       OBJECT-COMPUTER.      IBM-3090.
+
+       SPECIAL-NAMES.
+                             DECIMAL-POINT IS COMMA.
+
+       INPUT-OUTPUT          SECTION.
+
+       FILE-CONTROL.
+
+       DATA                  DIVISION.
+       FILE                  SECTION.
+
+       WORKING-STORAGE       SECTION.
+
+       77  IND               PIC  9(01).
+       77  WS-CODE           PIC  9(05).
+
+       01  WS-PESQ.
+           03  QTD-AUX       PIC S9(04)  COMP.
+           03  MAX-AUX       PIC S9(04)  COMP.
+           03  MIN-AUX       PIC S9(04)  COMP.
+           03  AVG-AUX       PIC S9(04)  COMP.
+           03  SUM-AUX       PIC S9(04)  COMP.
+
+       01  WS-MSGM.
+           03  FILLER        PIC  X(05)  VALUE  'ERRO'.
+           03  MSG-ERR       PIC  X(15).
+           03  FILLER        PIC  X(14)  VALUE  ', SQLCODE ->'.
+           03  COD-ERR       PIC  ---9.
+
+       01  TAB-VAL.
+           03  COL-TAB            OCCURS  02.
+               05  LIN-TAB        OCCURS  05.
+                   07  VAL-TAB    PIC     9(05).
+
+           EXEC    SQL       INCLUDE    SQLCA    END-EXEC.
+           EXEC    SQL       INCLUDE    DB2ALU   END-EXEC.
+
+       LINKAGE               SECTION.
+
+       PROCEDURE             DIVISION.
+
+           EXEC    SQL       DECLARE    CSR_ASC  CURSOR
+                   FOR       SELECT     MAT_ALU,
+                                        NOM_ALU, CUR_ALU, TUR_ALU,
+                                        END_ALU, BAI_ALU, CID_ALU,
+                                        EST_ALU, EML_ALU, TEL_ALU
+                             FROM       DBADB2.TABALU
+                             WHERE      MAT_ALU  >  :MAT-ALU
+                             ORDER  BY  MAT_ALU
+           END-EXEC.
+
+       000-INI-PROG.
+           ACCEPT   WS-CODE  FROM  SYSIN
+
+           MOVE     ZEROS     TO   MAT-ALU
+
+           EXEC     SQL    OPEN    CSR_ASC   END-EXEC
+
+           EVALUATE SQLCODE
+              WHEN  0
+                    PERFORM  100-LIST-ALL  UNTIL  SQLCODE  =  +100
+              WHEN  OTHER
+                    MOVE    'AO ABRIR TABELA' TO  MSG-ERR
+                    MOVE     SQLCODE          TO  COD-ERR
+
+                    GO  TO   900-MSGM-ERR
+           END-EVALUATE
+
+           EXEC     SQL   CLOSE    CSR_ASC   END-EXEC
+
+           MOVE     WS-CODE  TO    MAT-ALU
+
+           PERFORM  200-PESQ-010   THRU      200-PESQ-020
+           PERFORM  220-EXB-PESQ
+
+           STOP  RUN.
+
+       100-LIST-ALL.
+           EXEC    SQL    FETCH     CSR_ASC
+                          INTO     :MAT-ALU,
+                                   :NOM-ALU, :CUR-ALU, :TUR-ALU,
+                                   :END-ALU, :BAI-ALU, :CID-ALU,
+                                   :EST-ALU, :EML-ALU, :TEL-ALU
+           END-EXEC
+
+           EVALUATE TRUE
+              WHEN  SQLCODE   =    0
+                    DISPLAY '*-> ' MAT-ALU ' <--------------------------
+      -                     '------*'
+                    DISPLAY '| NOME....: ' NOM-ALU ' |'
+                    DISPLAY '| CURSO...: ' CUR-ALU '           |'
+                    DISPLAY '| TURMA...: ' TUR-ALU '                |'
+                    DISPLAY '| ENDERECO: ' END-ALU ' |'
+                    DISPLAY '| BAIRRO..: ' BAI-ALU '           |'
+                    DISPLAY '| CIDADE..: ' CID-ALU '   '  EST-ALU  ' |'
+                    DISPLAY '| E-MAIL..: ' EML-ALU ' |'
+                    DISPLAY '| TELEFONE: ' TEL-ALU '                |'
+                    DISPLAY '*------------------------------------------
+      -                     '*'
+                    DISPLAY ' '
+              WHEN  SQLCODE  NOT   =  +100
+                    MOVE    'DURANTE LEITURA'  TO  MSG-ERR
+                    MOVE     SQLCODE           TO  COD-ERR
+
+                    GO  TO   900-MSGM-ERR
+           END-EVALUATE.
+
+       200-PESQ-010.
+           EXEC     SQL   SELECT   COUNT (*),
+                                   MIN (MAT_ALU),  MAX (MAT_ALU),
+                                   AVG (MAT_ALU),  SUM (MAT_ALU)
+
+                          INTO    :QTD-AUX,
+                                  :MIN-AUX, :MAX-AUX,
+                                  :AVG-AUX, :SUM-AUX
+
+                          FROM     DBADB2.TABALU
+
+                          WHERE    MAT_ALU   <=  :MAT-ALU
+           END-EXEC
+
+           MOVE     1   TO  IND    PERFORM   210-MOVE-TAB.
+
+       200-PESQ-020.
+           EXEC     SQL   SELECT   COUNT (*),
+                                   MIN (MAT_ALU),  MAX (MAT_ALU),
+                                   AVG (MAT_ALU),  SUM (MAT_ALU)
+
+                          INTO    :QTD-AUX,
+                                  :MIN-AUX, :MAX-AUX,
+                                  :AVG-AUX, :SUM-AUX
+
+                          FROM     DBADB2.TABALU
+
+                          WHERE    MAT_ALU   >   :MAT-ALU
+           END-EXEC
+
+           MOVE     2   TO  IND    PERFORM   210-MOVE-TAB.
+
+       210-MOVE-TAB.
+           EVALUATE TRUE
+              WHEN  SQLCODE  =    0
+                    MOVE     QTD-AUX   TO   VAL-TAB (IND, 1)
+                    MOVE     MIN-AUX   TO   VAL-TAB (IND, 2)
+                    MOVE     MAX-AUX   TO   VAL-TAB (IND, 3)
+                    MOVE     AVG-AUX   TO   VAL-TAB (IND, 4)
+                    MOVE     SUM-AUX   TO   VAL-TAB (IND, 5)
+              WHEN  SQLCODE  =  -305
+                    MOVE     ZEROS     TO   VAL-TAB (IND, 1)
+                                            VAL-TAB (IND, 2)
+                                            VAL-TAB (IND, 3)
+                                            VAL-TAB (IND, 4)
+                                            VAL-TAB (IND, 5)
+              WHEN  OTHER
+                    MOVE    'DURANTE LEITURA'   TO   MSG-ERR
+                    MOVE     SQLCODE            TO   COD-ERR
+
+                    GO  TO   900-MSGM-ERR
+           END-EVALUATE.
+
+       220-EXB-PESQ.
+           DISPLAY  '*------------------------------------------*'
+           COMPUTE     MAT-ALU  =   WS-CODE   +  1
+           DISPLAY  '| RESULTADOS         | < '  MAT-ALU
+                    '  | > '  WS-CODE  '  |'
+           DISPLAY  '|--------------------|----------|----------|'
+           DISPLAY  '| REGISTROS (COUNT)  |   '  VAL-TAB (1, 1)
+                    '  |   '  VAL-TAB (2, 1)  '  |'
+           DISPLAY  '| MENOR CODIGO (MIN) |   '  VAL-TAB (1, 2)
+                    '  |   '  VAL-TAB (2, 2)  '  |'
+           DISPLAY  '| MAIOR CODIGO (MAX) |   '  VAL-TAB (1, 3)
+                    '  |   '  VAL-TAB (2, 3)  '  |'
+           DISPLAY  '| CODIGO MEDIO (AVG) |   '  VAL-TAB (1, 4)
+                    '  |   '  VAL-TAB (2, 4)  '  |'
+           DISPLAY  '| SOMA CODIGOS (SUM) |   '  VAL-TAB (1, 5)
+                    '  |   '  VAL-TAB (2, 5)  '  |'
+           DISPLAY  '*------------------------------------------*'.
+
+       900-MSGM-ERR.
+           DISPLAY  '*------------------------------------------*'
+           DISPLAY  '|                                          |'
+           DISPLAY  '|  '  WS-MSGM  '  |'
+           DISPLAY  '|                                          |'
+           DISPLAY  '*------------------------------------------*'
+
+           STOP  RUN.

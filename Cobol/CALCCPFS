@@ -1,0 +1,286 @@
+      *==========================================================
+       IDENTIFICATION  DIVISION.
+      *==========================================================
+
+       PROGRAM-ID.     CALCCPFS.
+       AUTHOR.         FUTURE SCHOOL CURSOS DE COMPUTACAO.
+
+      *===============================================================*
+      * IDENTIFICACAO:                                                *
+      * ==============                                                *
+      *                                                               *
+      * PROGRAMA ...............: CALCCPFS                            *
+      * DATA DE CRIACAO ........: 24/05/2007                          *
+      * ANALISTA RESPONSAVEL ...: LUIS ROVERATTI (FUTURE SCHOOL)      *
+      * PROGRAMADOR ............: LUIS ROVERATTI (FUTURE SCHOOL)      *
+      *                                                               *
+      *---------------------------------------------------------------*
+      * DESCRICAO RESUMIDA:                                           *
+      * ===================                                           *
+      *                                                               *
+      * - CALCULAR DV DO CPF                                          *
+      *                                                               *
+      * OBSERVACOES:                                                  *
+      * ===========                                                   *
+      *                                                               *
+      * NAO HA.                                                       *
+      *                                                               *
+      *---------------------------------------------------------------*
+      *                                                               *
+      * ESPECIFICACAO TECNICA:                                        *
+      * =====================                                         *
+      *                                                               *
+      * BASES DE DADOS:                                               *
+      * ==============                                                *
+      *                                                               *
+      * ARQUIVOS:                                                     *
+      * ========                                                      *
+      *                                                               *
+      * NOME     TIPO       DESCRICAO                                 *
+      * ======== ========== ==========================================*
+      * NAO HA.                                                       *
+      *                                                               *
+      * TABELAS DB2:                                                  *
+      * ===========                                                   *
+      *                                                               *
+      * NAO HA.                                                       *
+      *                                                               *
+      * LAYOUTS UTILIZADOS:                                           *
+      * ==================                                            *
+      *                                                               *
+      * NOME     FUNCAO              DESCRICAO                        *
+      * ======== =================== =================================*
+      * NAO HA.                                                       *
+      *                                                               *
+      * MODULOS OU FUNCOES UTILIZADAS:                                *
+      * =============================                                 *
+      *                                                               *
+      * NOME         DESCRICAO                                        *
+      * ============ =================================================*
+      * NAO HA.                                                       *
+      *                                                               *
+      *===============================================================*
+
+      *---------------------------------------------------------------*
+       ENVIRONMENT     DIVISION.
+      *---------------------------------------------------------------*
+
+      *---------------------------------------------------------------*
+       CONFIGURATION   SECTION.
+      *---------------------------------------------------------------*
+
+       SPECIAL-NAMES.
+                       DECIMAL-POINT IS COMMA.
+
+      *---------------------------------------------------------------*
+       INPUT-OUTPUT    SECTION.
+      *---------------------------------------------------------------*
+
+       FILE-CONTROL.
+
+      *---------------------------------------------------------------*
+       DATA            DIVISION.
+      *---------------------------------------------------------------*
+
+      *---------------------------------------------------------------*
+       FILE            SECTION.
+      *---------------------------------------------------------------*
+
+      *---------------------------------------------------------------*
+       WORKING-STORAGE SECTION.
+      *---------------------------------------------------------------*
+
+      *---------------------------------------------------------------*
+       01  FILLER                  PIC  X(38) VALUE
+           '* INICIO DA WORKING-STORAGE CALCCPFS *'.
+      *---------------------------------------------------------------*
+
+       01  FILLER.
+           05  WRK-BATCH           PIC  X(08) VALUE 'BATCH'.
+           05  WRK-RESTO           PIC  9(02) VALUE ZEROS.
+           05  WRK-MULTIPLICADOR   PIC  9(02) VALUE ZEROS.
+           05  WRK-CPF-COM-DV1.
+               10  WRK-CPF-DV1     PIC  9(09).
+               10  WRK-DV1-DV1     PIC  9.
+
+      *---------------------------------------------------------------*
+       01  FILLER                  PIC  X(38) VALUE
+           '**  DEFINICAO DA AREA INFORMADA   ****'.
+      *---------------------------------------------------------------*
+
+       01  FILLER.
+           05  WRK-CPF-INFORMADO.
+               10  FILLER          PIC  X     VALUE SPACES.
+               10  WRK-CPF-N       PIC  9(09) VALUE ZEROS.
+
+      *---------------------------------------------------------------*
+       01  FILLER                  PIC  X(38) VALUE
+           '*** DEFINICAO DAS AREAS EDITADAS  ****'.
+      *---------------------------------------------------------------*
+
+       01  FILLER.
+           05  WRK-CPF-EDITADO.
+               10  WRK-NUMERO-CPF  PIC  999.999.999.
+               10  FILLER          PIC  X     VALUE '-'.
+               10  WRK-DV1         PIC  9.
+               10  WRK-DV2         PIC  9.
+
+      *---------------------------------------------------------------*
+       01  FILLER                  PIC  X(38) VALUE
+           '**** DEFINICAO DOS ACUMULADORES   ****'.
+      *---------------------------------------------------------------*
+
+       01  FILLER.
+           05  ACUM-CPF-GERAL      PIC  9(05) VALUE 0.
+
+      *---------------------------------------------------------------*
+       01  FILLER                  PIC  X(38) VALUE
+           '**** DEFINICAO DOS INDEXADORES    ****'.
+      *---------------------------------------------------------------*
+
+       01  FILLER.
+           05  X                   PIC  9(02) VALUE 0.
+           05  Y                   PIC  9(02) VALUE 0.
+
+      *---------------------------------------------------------------*
+       01  FILLER                  PIC  X(38) VALUE
+           '**** DEFINICAO DAS TAB. INTERNAS  ****'.
+      *---------------------------------------------------------------*
+
+       01  FILLER.
+           05  TAB-CPF             PIC  X(10) VALUE SPACES.
+           05  TAB-CPF-R REDEFINES TAB-CPF PIC 9 OCCURS 10.
+
+      *---------------------------------------------------------------*
+       01  FILLER                  PIC  X(38) VALUE
+           '*TERMINO DA WORKING-STORAGE CALCCPFS *'.
+      *---------------------------------------------------------------*
+
+      *---------------------------------------------------------------*
+       PROCEDURE       DIVISION.
+      *---------------------------------------------------------------*
+
+      *----------------------------------------------------------------*
+       000-00-INICIO-CALCCPFS          SECTION.
+      *----------------------------------------------------------------*
+
+           ACCEPT      WRK-CPF-N           FROM    SYSIN
+
+           MOVE        WRK-CPF-INFORMADO   TO      TAB-CPF
+
+           MOVE        WRK-CPF-N           TO      WRK-NUMERO-CPF
+                                                   WRK-CPF-DV1
+
+           PERFORM     001-00-CALCULAR-DV.
+
+           PERFORM     002-00-EXIBIR-DISPLAY.
+
+           STOP    RUN.
+
+      *----------------------------------------------------------------*
+       001-00-CALCULAR-DV              SECTION.
+      *----------------------------------------------------------------*
+
+           MOVE        10                  TO      WRK-MULTIPLICADOR.
+
+           MOVE        2                   TO      Y.
+
+           PERFORM     001-01-ACUM-VALORES
+                       VARYING X FROM 1 BY 1
+                       UNTIL   X GREATER 9.
+
+           COMPUTE ACUM-CPF-GERAL = ACUM-CPF-GERAL * 10
+
+           DIVIDE  ACUM-CPF-GERAL BY 11 GIVING ACUM-CPF-GERAL
+                   REMAINDER WRK-RESTO.
+
+           IF  WRK-RESTO           EQUAL        0
+               MOVE    0                  TO    WRK-DV1
+                                                WRK-DV1-DV1
+           ELSE
+               MOVE    WRK-RESTO          TO    WRK-DV1
+                                                WRK-DV1-DV1
+           END-IF.
+
+           MOVE        WRK-CPF-COM-DV1    TO    TAB-CPF
+
+           MOVE        0                  TO    ACUM-CPF-GERAL.
+
+           MOVE        11                 TO    WRK-MULTIPLICADOR.
+
+           MOVE        1                  TO    Y.
+
+           PERFORM     001-01-ACUM-VALORES
+                       VARYING X FROM 1 BY 1
+                       UNTIL   X GREATER 10.
+
+           COMPUTE ACUM-CPF-GERAL = ACUM-CPF-GERAL * 10
+
+           DIVIDE  ACUM-CPF-GERAL BY 11 GIVING ACUM-CPF-GERAL
+                   REMAINDER WRK-RESTO.
+
+           IF  WRK-RESTO           EQUAL        0
+               MOVE    0                  TO    WRK-DV2
+           ELSE
+               MOVE    WRK-RESTO          TO    WRK-DV2
+           END-IF.
+
+       001-00-FIM.                     EXIT.
+
+      *----------------------------------------------------------------*
+       001-01-ACUM-VALORES             SECTION.
+      *----------------------------------------------------------------*
+
+           COMPUTE ACUM-CPF-GERAL = (ACUM-CPF-GERAL +
+                                    (TAB-CPF-R(Y) * WRK-MULTIPLICADOR))
+
+           ADD         1                  TO       Y.
+
+           SUBTRACT    1                  FROM     WRK-MULTIPLICADOR.
+
+       001-01-FIM.                     EXIT.
+
+      *----------------------------------------------------------------*
+       002-00-EXIBIR-DISPLAY           SECTION.
+      *----------------------------------------------------------------*
+
+           DISPLAY         ' '.
+
+           DISPLAY
+           '**********************************************************'
+           DISPLAY
+           '**                                                      **'
+           DISPLAY
+           '**            DEMONSTRACAO DOS DV CALCULADOS            **'
+           DISPLAY
+           '**            ==============================            **'
+           DISPLAY
+           '**                                                      **'
+           DISPLAY
+           '**------------------------------------------------------**'
+           DISPLAY
+           '**                                                      **'
+           DISPLAY
+           '**                  PROGRAMA CALCCPFS                   **'
+           DISPLAY
+           '**                  =================                   **'
+           DISPLAY
+           '**                                                      **'
+           DISPLAY
+           '**------------------------------------------------------**'
+           DISPLAY
+           '**                                                      **'
+           DISPLAY
+           '**  CPF INFORMADO  ==> ' WRK-NUMERO-CPF '
+      -    '   **'
+           DISPLAY
+           '**                                                      **'
+           DISPLAY
+           '**  CPF OBTIDO     ==> ' WRK-CPF-EDITADO '
+      -    ' **'
+           DISPLAY
+           '**                                                      **'
+           DISPLAY
+           '**********************************************************'.
+
+       002-00-FIM.                     EXIT.

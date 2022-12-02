@@ -28,10 +28,10 @@
        77  WS-TIME           PIC S9(15)  COMP-3.
        77  WS-DATA           PIC  X(08).
        77  WS-HORA           PIC  X(05).
-       77  WS-LINE           PIC  9(02).
 
        01  WS-COMM.
            03  WS-PAGE       PIC  9(01).
+           03  WS-LINE       PIC  9(02).
            03  WS-MATI       PIC  9(05).
            03  WS-MATF       PIC  9(05).
 
@@ -46,6 +46,7 @@
 
        01  DFHCOMMAREA.
            03  LK-PAGE       PIC  9(01).
+           03  LK-LINE       PIC  9(02).
            03  LK-MATI       PIC  9(05).
            03  LK-MATF       PIC  9(05).
 
@@ -72,21 +73,22 @@
            END-EXEC.
 
        000-INI-PROG.
-           IF  EIBCALEN  =   0
-               GO  TO        100-INI-MAPA
-           ELSE
-               GO  TO        200-REC-TELA
-           END-IF.
+           EVALUATE EIBCALEN
+              WHEN  0
+                    MOVE     1         TO   WS-PAGE
+                    MOVE     ZEROS     TO   WS-MATI
 
-       100-INI-MAPA.
-           MOVE     1         TO   WS-PAGE
-           MOVE     ZEROS     TO   WS-MATI  WS-MATF
+                    GO  TO   100-ATU-DATA
+              WHEN  OTHER
+                    MOVE     LK-PAGE   TO   WS-PAGE
+                    MOVE     LK-LINE   TO   WS-LINE
+                    MOVE     LK-MATI   TO   WS-MATI
+                    MOVE     LK-MATF   TO   WS-MATF
 
-           MOVE     SPACES    TO   TMAT1O   TMAT2O   TMAT3O
-                                   TNOMEO   TCURSO   TTURMO
-                                   TENDRO   TBAIRO   TCIDAO
-                                   TESTDO   TMAILO   TFONEO.
-       110-ATU-DATA.
+                    GO  TO   300-REC-TELA
+           END-EVALUATE.
+
+       100-ATU-DATA.
            EXEC     CICS  ASKTIME
                           ABSTIME (WS-TIME)
            END-EXEC
@@ -101,166 +103,215 @@
 
            MOVE     WS-DATA   TO   TDATAO
            MOVE     WS-HORA   TO   THORAO
-           MOVE     DFHBMPRF  TO   TDATAA    THORAA.
+           MOVE     DFHBMPRF  TO   TDATAA   THORAA.
 
-       120-ATU-HEAD.
+       110-MAPA-CAB.
            MOVE     EIBTRNID  TO   TTRNSO
            MOVE     EIBTRMID  TO   TTERMO
-           MOVE     DFHBMPRF  TO   TTRNSA    TTERMA
+           MOVE     DFHBMPRF  TO   TTRNSA   TTERMA
 
-           EXEC     CICS  SEND     MAP      ('CABDB2R')
-                                   MAPSET   ('MAPDB2R')
-                          FROM              (CABDB2RO)
+           EXEC     CICS  SEND     MAP     ('CABDB2R')
+                                   MAPSET  ('MAPDB2R')
+                          FROM             (CABDB2RO)
                           ACCUM    ERASE
            END-EXEC
 
            EVALUATE WS-PAGE
               WHEN  1
-                    EXEC     CICS  SEND     MAP      ('CB1DB2R')
-                                            MAPSET   ('MAPDB2R')
-                                   FROM              (CB1DB2RO)
+                    EXEC     CICS  SEND     MAP     ('CB1DB2R')
+                                            MAPSET  ('MAPDB2R')
+                                   FROM             (CB1DB2RO)
                                    ACCUM    ERASE
                     END-EXEC
               WHEN  2
-                    EXEC     CICS  SEND     MAP      ('CB2DB2R')
-                                            MAPSET   ('MAPDB2R')
-                                   FROM              (CB2DB2RO)
+                    EXEC     CICS  SEND     MAP     ('CB2DB2R')
+                                            MAPSET  ('MAPDB2R')
+                                   FROM             (CB2DB2RO)
                                    ACCUM    ERASE
                     END-EXEC
               WHEN  3
-                    EXEC     CICS  SEND     MAP      ('CB3DB2R')
-                                            MAPSET   ('MAPDB2R')
-                                   FROM              (CB3DB2RO)
+                    EXEC     CICS  SEND     MAP     ('CB3DB2R')
+                                            MAPSET  ('MAPDB2R')
+                                   FROM             (CB3DB2RO)
                                    ACCUM    ERASE
                     END-EXEC
            END-EVALUATE.
 
-       130-ATU-LIST.
-           MOVE     ZEROS     TO   WS-LINE
+       120-ATU-LIST.
            MOVE     WS-MATI   TO   MAT-ALU
 
-           EXEC     SQL   OPEN     CSR_ASC   END-EXEC
+           EXEC     SQL   OPEN     CSR_ASC  END-EXEC
 
-           PERFORM  140-LIST-DET   UNTIL     WS-LINE   >   13
-                                   OR        SQLCODE  NOT  =  0
-
-           EXEC     SQL   CLOSE    CSR_ASC   END-EXEC
-
-           IF  WS-LINE    =   0
-               EXEC     CICS  SEND  CONTROL  ALARM  END-EXEC
-
-               MOVE    'NAO EXISTEM ALUNOS CADASTRADOS!'  TO  TMSGMO
+           IF  SQLCODE    =   0
+               MOVE     0     TO   WS-LINE
            ELSE
-               MOVE    'PF3-MENU, PF7-ACIMA, PF8-ABAIXO, PF10-ESQUERDA,
-      -                'PF11-DIREITA'                     TO  TMSGMO
+               MOVE     99    TO   WS-LINE
            END-IF
+
+           PERFORM  140-MAPA-DET   UNTIL    WS-LINE   >   13
+                                   OR       SQLCODE  NOT  =  0
+
+           EXEC     SQL   CLOSE    CSR_ASC  END-EXEC.
+
+       130-MAPA-MSG.
+           EVALUATE WS-LINE
+              WHEN  0
+                    MOVE     'O BANCO DE DADOS ESTA VAZIO!'  TO  TMSGMO
+              WHEN  99
+                    MOVE     'FALHA AO ACESSAR O BANCO DE DADOS - TENTE
+      -                      'NOVAMENTE!'          TO  TMSGMO
+              WHEN  OTHER
+                    MOVE     'PF3-MENU, PF7-ACIMA, PF8-ABAIXO, PF10-ESQU
+      -                      'ERDA, PF11-DIREITA'  TO  TMSGMO
+           END-EVALUATE
 
            MOVE     SPACES    TO   TPCSRO
            MOVE     -1        TO   TPCSRL
-           MOVE     DFHBMPRF  TO   TMSGMA   TPCSRA
+           MOVE     DFHBMPRF  TO   TMSGMA    TPCSRA
 
-           EXEC     CICS  SEND     MAP     ('RODDB2R')
-                                   MAPSET  ('MAPDB2R')
-                          FROM             (RODDB2RO)
+           EXEC     CICS  SEND     MAP      ('RODDB2R')
+                                   MAPSET   ('MAPDB2R')
+                          FROM              (RODDB2RO)
                           ACCUM    CURSOR
            END-EXEC
 
-           EXEC     CICS  SEND     PAGE      END-EXEC.
+           IF  WS-LINE    =   99   OR   0
+               EXEC     CICS  SEND   CONTROL   ALARM   END-EXEC.
+
+           EXEC     CICS  SEND     PAGE      END-EXEC
 
            EXEC     CICS  RETURN   COMMAREA (WS-COMM)
                                    TRANSID  ('DB2R')
            END-EXEC.
 
-       140-LIST-DET.
+       140-MAPA-DET.
+           PERFORM  200-READ-ASC
+
+           IF  SQLCODE   =    0
+               MOVE     MAT-ALU   TO   TMAT1O  TMAT2O
+                                       TMAT3O  WS-MATF
+               EVALUATE WS-PAGE
+                  WHEN  1
+                        MOVE     NOM-ALU   TO  TNOMEO
+                        MOVE     CUR-ALU   TO  TCURSO
+                        MOVE     TUR-ALU   TO  TTURMO
+                        MOVE     DFHBMPRF  TO  TMAT1A   TNOMEA
+                                               TCURSA   TTURMA
+
+                        EXEC     CICS  SEND    MAP     ('DT1DB2R')
+                                               MAPSET  ('MAPDB2R')
+                                       FROM            (DT1DB2RO)
+                                       ACCUM   ERASE
+                        END-EXEC
+                  WHEN  2
+                        MOVE     END-ALU   TO  TENDRO
+                        MOVE     BAI-ALU   TO  TBAIRO
+                        MOVE     TEL-ALU   TO  TFONEO
+                        MOVE     DFHBMPRF  TO  TMAT2A   TENDRA
+                                               TBAIRA   TFONEA
+
+                        EXEC     CICS  SEND    MAP     ('DT2DB2R')
+                                               MAPSET  ('MAPDB2R')
+                                       FROM            (DT2DB2RO)
+                                       ACCUM   ERASE
+                        END-EXEC
+                  WHEN  3
+                        MOVE     CID-ALU   TO  TCIDAO
+                        MOVE     EST-ALU   TO  TESTDO
+                        MOVE     EML-ALU   TO  TMAILO
+                        MOVE     DFHBMPRF  TO  TMAT3A   TCIDAA
+                                               TESTDA   TMAILA
+
+                        EXEC     CICS  SEND    MAP     ('DT3DB2R')
+                                               MAPSET  ('MAPDB2R')
+                                       FROM            (DT3DB2RO)
+                                       ACCUM   ERASE
+                        END-EXEC
+               END-EVALUATE
+
+               ADD      1         TO   WS-LINE
+           END-IF.
+
+       200-READ-ASC.
            EXEC     SQL   FETCH    CSR_ASC
+                          INTO    :MAT-ALU,
+                                  :NOM-ALU, :CUR-ALU, :TUR-ALU,
+                                  :END-ALU, :BAI-ALU, :CID-ALU,
+                                  :EST-ALU, :EML-ALU, :TEL-ALU
+           END-EXEC.
+
+       210-READ-DSC.
+           EXEC     SQL   FETCH    CSR_DSC
                           INTO    :MAT-ALU,
                                   :NOM-ALU, :CUR-ALU, :TUR-ALU,
                                   :END-ALU, :BAI-ALU, :CID-ALU,
                                   :EST-ALU, :EML-ALU, :TEL-ALU
            END-EXEC
 
-           IF  SQLCODE   =    0
-               MOVE     MAT-ALU   TO   TMAT1O   TMAT2O
-                                       TMAT3O   WS-MATF
-               EVALUATE WS-PAGE
-                  WHEN  1
-                        MOVE     NOM-ALU   TO   TNOMEO
-                        MOVE     CUR-ALU   TO   TCURSO
-                        MOVE     TUR-ALU   TO   TTURMO
-                        MOVE     DFHBMPRF  TO   TMAT1A    TNOMEA
-                                                TCURSA    TTURMA
+           IF  SQLCODE   =    0    ADD   1   TO   WS-LINE.
 
-                        EXEC     CICS  SEND     MAP      ('DT1DB2R')
-                                                MAPSET   ('MAPDB2R')
-                                       FROM              (DT1DB2RO)
-                                       ACCUM    ERASE
-                        END-EXEC
-                  WHEN  2
-                        MOVE     END-ALU   TO   TENDRO
-                        MOVE     BAI-ALU   TO   TBAIRO
-                        MOVE     TEL-ALU   TO   TFONEO
-                        MOVE     DFHBMPRF  TO   TMAT2A    TENDRA
-                                                TBAIRA    TFONEA
-
-                        EXEC     CICS  SEND     MAP      ('DT2DB2R')
-                                                MAPSET   ('MAPDB2R')
-                                       FROM              (DT2DB2RO)
-                                       ACCUM    ERASE
-                        END-EXEC
-                  WHEN  3
-                        MOVE     CID-ALU   TO   TCIDAO
-                        MOVE     EST-ALU   TO   TESTDO
-                        MOVE     EML-ALU   TO   TMAILO
-                        MOVE     DFHBMPRF  TO   TMAT3A    TCIDAA
-                                                TESTDA    TMAILA
-
-                        EXEC     CICS  SEND     MAP      ('DT3DB2R')
-                                                MAPSET   ('MAPDB2R')
-                                       FROM              (DT3DB2RO)
-                                       ACCUM    ERASE
-                        END-EXEC
-               END-EVALUATE
-
-               ADD      1         TO   WS-LINE.
-
-       200-REC-TELA.
-           MOVE     LK-PAGE   TO   WS-PAGE
-           MOVE     LK-MATI   TO   WS-MATI
-           MOVE     LK-MATF   TO   WS-MATF
-
+       300-REC-TELA.
            EVALUATE TRUE
-              WHEN  EIBAID    =    DFHPF3    OR   WS-MATF  =   0
-                    GO  TO    300-FIM-PROG
+              WHEN  WS-LINE   =    99
+                    GO  TO    100-ATU-DATA
+              WHEN  EIBAID    =    DFHPF3    OR   WS-LINE  =  0
+                    EXEC    CICS   XCTL
+                                   PROGRAM      ('PRGDB2M')
+                    END-EXEC
               WHEN  EIBAID    =    DFHPF7
-                    GO  TO    210-PF07-000
+                    GO  TO    310-EXE-PF07
+              WHEN  EIBAID    =    DFHPF8
+                    GO  TO    320-EXE-PF08
               WHEN  EIBAID    =    DFHPF10   OR   DFHPF11
-                    GO  TO    230-CHG-PAGE
+                    GO  TO    330-CHG-PAGE
               WHEN  OTHER
-                    EXEC      CICS    SEND   CONTROL   ALARM   END-EXEC
-                    GO  TO    110-ATU-DATA
+                    EXEC    CICS   SEND
+                                   CONTROL        ALARM
+                    END-EXEC
+                    GO  TO   100-ATU-DATA
            END-EVALUATE.
 
-       210-PF07-000.
+       310-EXE-PF07.
            IF  WS-MATI   =    0
-               EXEC      CICS    SEND   CONTROL   ALARM   END-EXEC.
+               EXEC     CICS    SEND   CONTROL    ALARM    END-EXEC
+           ELSE
+               MOVE     ZEROS     TO   WS-LINE
+               MOVE     WS-MATI   TO   MAT-ALU
 
-           MOVE     ZEROS     TO   WS-LINE
-           MOVE     WS-MATI   TO   MAT-ALU
+               EXEC     SQL   OPEN     CSR_DSC   END-EXEC
 
-           EXEC     SQL   OPEN     CSR_DSC   END-EXEC
+               PERFORM  210-READ-DSC   UNTIL     WS-LINE    >   13
+                                       OR        SQLCODE   NOT  =  0
 
-           PERFORM  210-PF07-010   UNTIL     WS-LINE   >   13
-                                   OR        SQLCODE  NOT  =   0
+               EXEC     SQL   CLOSE    CSR_DSC   END-EXEC
 
-           EXEC     SQL   CLOSE    CSR_DSC   END-EXEC
+               IF  WS-LINE   <    14
+                   MOVE     ZEROS      TO   WS-MATI
+               ELSE
+                   MOVE     MAT-ALU    TO   WS-MATI
+               END-IF
+           END-IF
 
-           COMPUTE  WS-MATI   =    MAT-ALU   -   1
-           GO  TO   110-ATU-DATA.
+           GO  TO   100-ATU-DATA.
 
-       210-PF07-010.
-           EXIT.
+       320-EXE-PF08.
+           MOVE     WS-MATF   TO   MAT-ALU
 
-       230-CHG-PAGE.
+           EXEC     SQL   OPEN     CSR_ASC   END-EXEC
+
+           PERFORM  200-READ-ASC
+
+           IF  SQLCODE   =    0
+               MOVE     WS-MATF    TO   WS-MATI
+           ELSE
+               EXEC     CICS     SEND   CONTROL   ALARM   END-EXEC
+           END-IF
+
+           EXEC     SQL   CLOSE    CSR_ASC   END-EXEC
+
+           GO  TO   100-ATU-DATA.
+
+       330-CHG-PAGE.
            IF (EIBAID    =    DFHPF10  AND   WS-PAGE   =   1)  OR
               (EIBAID    =    DFHPF11  AND   WS-PAGE   =   3)
 
@@ -273,9 +324,4 @@
                END-IF
            END-IF
 
-           GO  TO   110-ATU-DATA.
-
-       300-FIM-PROG.
-           EXEC     CICS      XCTL
-                    PROGRAM  ('PRGDB2M')
-           END-EXEC.
+           GO  TO   100-ATU-DATA.

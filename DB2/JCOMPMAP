@@ -5,9 +5,9 @@
 //         CICSP='SYS2.CICSTS13',
 //         A=,                         A=A FOR ALIGNED MAP
 //         RMODE=ANY                   24/ANY
-//*------------------------------------------------------------------*
-//*        GENERATE SOURCE MAP                                       *
-//*------------------------------------------------------------------*
+//*
+//*        SOURCE (MAPA FONTE)
+//*
 //COPY     EXEC PGM=IEBGENER
 //SYSPRINT DD DUMMY
 //SYSUT1   DD DISP=SHR,DSN=&FONTP..DB2(&NAME)
@@ -15,9 +15,9 @@
 //            UNIT=SYSDA,SPACE=(400,(50,50)),
 //            DCB=(RECFM=FB,LRECL=80,BLKSIZE=400)
 //SYSIN    DD DUMMY
-//*------------------------------------------------------------------*
-//*        ASSEMBLE THE MAP                                          *
-//*------------------------------------------------------------------*
+//*
+//*        ASSEMBLE MAP (OBJETO)
+//*
 //ASMMAP   EXEC PGM=ASMA90,REGION=4M,
 //         PARM='SYSPARM(&A.MAP),DECK,NOOBJECT'
 //SYSPRINT DD SYSOUT=*
@@ -32,9 +32,9 @@
 //            UNIT=SYSDA,SPACE=(400,(500,500)),
 //            DCB=(RECFM=FB,LRECL=80,BLKSIZE=400)
 //SYSIN    DD DSN=&&TEMPM,DISP=(OLD,PASS)
-//*------------------------------------------------------------------*
-//*        LINKEDIT THE MAP                                          *
-//*------------------------------------------------------------------*
+//*
+//*        LINKEDIT MAP (EXECUTAVEL)
+//*
 //LINKMAP  EXEC PGM=IEWL,REGION=4M,COND=(4,LT,ASMMAP),
 //         PARM='LIST,LET,XREF,RMODE(&RMODE)'
 //SYSPRINT DD SYSOUT=*
@@ -42,9 +42,9 @@
 //SYSUT1   DD UNIT=SYSDA,DCB=BLKSIZE=1024,
 //            SPACE=(1024,(200,20))
 //SYSLIN   DD DSN=&&MAP,DISP=(OLD,DELETE,DELETE)
-//*------------------------------------------------------------------*
-//*        GENERATE PROGRAM DUMMY SECTION                            *
-//*------------------------------------------------------------------*
+//*
+//*        BOOK DO MAPA
+//*
 //ASMDSECT EXEC PGM=ASMA90,REGION=4M,
 //         PARM='SYSPARM(&A.DSECT),DECK,NOOBJECT'
 //SYSPRINT DD SYSOUT=*
@@ -60,5 +60,5 @@
 //*
 //         PEND
 //*
-//MAPA001  EXEC DFHMAPCS,NAME=MAPDB2M
+//MAPA002  EXEC DFHMAPCS,NAME=MAPDB2M
 //*

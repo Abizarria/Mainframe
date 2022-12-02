@@ -31,9 +31,9 @@
        77  WS-MSGM         PIC  X(20).
        77  WS-FASE         PIC  9(01).
 
-       COPY   DFHAID.
-       COPY   DFHBMSCA.
-       COPY   MAPDB2M.
+           COPY    DFHAID.
+           COPY    DFHBMSCA.
+           COPY    MAPDB2M.
 
        LINKAGE             SECTION.
 
@@ -146,6 +146,10 @@
                                    PROGRAM  ('PRGDB2E')
                     END-EXEC
              WHEN   5
+                    EXEC     CICS  START
+                                   TRANSID  ('DB2R)
+                    END-EXEC
+                           
                     EXEC     CICS  XCTL
                                    PROGRAM  ('PRGDB2R')
                     END-EXEC

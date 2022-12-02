@@ -1,0 +1,333 @@
+      *---------------------------------------------------------------*
+       IDENTIFICATION                  DIVISION.
+      *---------------------------------------------------------------*
+
+       PROGRAM-ID. CALCCNPJ.
+       AUTHOR.     FUTURE SCHOOL CURSOS DE COMPUTACAO.
+
+      *===============================================================*
+      * IDENTIFICACAO:                                                *
+      * ==============                                                *
+      *                                                               *
+      * PROGRAMA ...............: CALCCNPJ                            *
+      * DATA DE CRIACAO ........: 29/05/2007                          *
+      * ANALISTA RESPONSAVEL ...: LUIS ROVERATTI (FUTURE SCHOOL)      *
+      * PROGRAMADOR ............: LUIS ROVERATTI (FUTURE SCHOOL)      *
+      *                                                               *
+      *---------------------------------------------------------------*
+      * DESCRICAO RESUMIDA DO PROGRAMA:                               *
+      * ==============================                                *
+      *                                                               *
+      * CONSISTIR O DV E OS CONTROLES DE UM CNPJ INFORMADO VIA SYSIN  *
+      *                                                               *
+      * OBSERVACOES:                                                  *
+      * ===========                                                   *
+      *                                                               *
+      * NAO HA.                                                       *
+      *                                                               *
+      *---------------------------------------------------------------*
+      * ESPECIFICACAO TECNICA:                                        *
+      * =====================                                         *
+      *                                                               *
+      * BASES DE DADOS UTILIZADAS:                                    *
+      *                                                               *
+      * ARQUIVOS:                                                     *
+      *                                                               *
+      * NOME     TIPO       DESCRICAO                                 *
+      * ======== ========== ==========================================*
+      * NAO HA.                                                       *
+      *                                                               *
+      * TABELAS DB2:                                                  *
+      *                                                               *
+      * NAO HA.                                                       *
+      *                                                               *
+      * LAYOUTS UTILIZADOS:                                           *
+      *                                                               *
+      * NOME     FUNCAO              DESCRICAO                        *
+      * ======== =================== =================================*
+      * NAO HA.                                                       *
+      *                                                               *
+      * MODULOS UTILIZADOS:                                           *
+      *                                                               *
+      * NOME     DESCRICAO                                            *
+      * ======== =====================================================*
+      * NAO HA.                                                       *
+      *                                                               *
+      *===============================================================*
+
+      *---------------------------------------------------------------*
+       ENVIRONMENT                     DIVISION.
+      *---------------------------------------------------------------*
+
+      *---------------------------------------------------------------*
+       CONFIGURATION                   SECTION.
+      *---------------------------------------------------------------*
+
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+
+      *---------------------------------------------------------------*
+       INPUT-OUTPUT                    SECTION.
+      *---------------------------------------------------------------*
+
+       FILE-CONTROL.
+
+      *---------------------------------------------------------------*
+       DATA                            DIVISION.
+      *---------------------------------------------------------------*
+
+      *---------------------------------------------------------------*
+       FILE                            SECTION.
+      *---------------------------------------------------------------*
+
+      *---------------------------------------------------------------*
+       WORKING-STORAGE                 SECTION.
+      *---------------------------------------------------------------*
+
+       01  FILLER                      PIC  X(35) VALUE
+           'INICIO DA WORKING-STORAGE CALCCNPJ'.
+
+      *---------------------------------------------------------------*
+       01  FILLER                      PIC  X(32) VALUE
+           '*DEFINICAO DAS AREAS AUXILIARES*'.
+      *---------------------------------------------------------------*
+
+       01  WS-AREAS-PARA-CALCULOS.
+           05  WS-NUMERO-INFORMADO     PIC  9(14) VALUE 0.
+           05  WS-NUMERO-INFORMADO-R   REDEFINES
+               WS-NUMERO-INFORMADO.
+               10  WS-NUM-INFORMADO    PIC  9(07).
+               10  WS-DV1-INFORMADO    PIC  9.
+               10  WS-FIL-INFORMADA    PIC  9(04).
+               10  WS-CT1-INFORMADO    PIC  9.
+               10  WS-CT2-INFORMADO    PIC  9.
+      *
+           05  WS-NUMERO-INFORMADO-ED.
+               10  WS-NUM-INFORMADO-ED PIC  99.999.99.
+               10  WS-DV1-INFORMADO-ED PIC  9.
+               10  FILLER              PIC  X     VALUE '/'.
+               10  WS-FIL-INFORMADA-ED PIC  9999.
+               10  FILLER              PIC  X     VALUE '-'.
+               10  WS-CT1-INFORMADO-ED PIC  9.
+               10  WS-CT2-INFORMADO-ED PIC  9.
+      *
+           05  WS-NUMERO-CALCULADO     PIC  9(14) VALUE 0.
+           05  WS-NUMERO-CALCULADO-R   REDEFINES
+               WS-NUMERO-CALCULADO.
+               10  WS-NUM-CALCULADO    PIC  9(07).
+               10  WS-DV1-CALCULADO    PIC  9.
+               10  WS-FIL-CALCULADA    PIC  9(04).
+               10  WS-CT1-CALCULADO    PIC  9.
+               10  WS-CT2-CALCULADO    PIC  9.
+      *
+           05  WS-NUMERO-CALCULADO-ED.
+               10  WS-NUM-CALCULADO-ED PIC  99.999.99.
+               10  WS-DV1-CALCULADO-ED PIC  9.
+               10  FILLER              PIC  X     VALUE '/'.
+               10  WS-FIL-CALCULADA-ED PIC  9999.
+               10  FILLER              PIC  X     VALUE '-'.
+               10  WS-CT1-CALCULADO-ED PIC  9.
+               10  WS-CT2-CALCULADO-ED PIC  9.
+      *
+           05  WS-NUMERO.
+               10  WS-NUMERO-UNIT      PIC  9     OCCURS 14.
+      *
+           05  WS-DAC-01               PIC  9     VALUE 0.
+      *
+           05  WS-DAC-02               PIC  9     VALUE 0.
+      *
+           05  WS-DAC-03               PIC  9     VALUE 0.
+      *
+           05  WS-SUM-MULT             PIC  9(05) VALUE 0.
+      *
+           05  WS-NUM-DGT              PIC  9(02) VALUE 0.
+      *
+           05  WS-RESTO                PIC  9(02) VALUE 0.
+      *
+           05  AB                      PIC  99    VALUE 0.
+           05  WS-AB                   REDEFINES  AB.
+               10  WS-A                PIC  9.
+               10  WS-B                PIC  9.
+      *
+           05  CDD                     PIC  99    VALUE 0.
+           05  WS-CD                   REDEFINES  CDD.
+               10  WS-C                PIC  9.
+               10  WS-D                PIC  9.
+      *
+           05  EF                      PIC  99    VALUE 0.
+           05  WS-EF                   REDEFINES  EF.
+               10  WS-E                PIC  9.
+               10  WS-F                PIC  9.
+      *
+           05  GH                      PIC  99    VALUE 0.
+           05  WS-GH                   REDEFINES  GH.
+               10  WS-G                PIC  9.
+               10  WS-H                PIC  9.
+      *
+           05  X1X2                    PIC  99    VALUE 0.
+           05  WS-X1X2                 REDEFINES  X1X2.
+               10  WS-X1               PIC  9.
+               10  WS-X2               PIC  9.
+
+      *---------------------------------------------------------------*
+       01   FILLER                     PIC  X(35) VALUE
+           'FIM DA WORKING-STORAGE CALCCNPJ'.
+      *---------------------------------------------------------------*
+
+      *---------------------------------------------------------------*
+       PROCEDURE                       DIVISION.
+      *---------------------------------------------------------------*
+
+      *---------------------------------------------------------------*
+       00000-ROTINA-PRINCIPAL          SECTION.
+      *---------------------------------------------------------------*
+
+           ACCEPT  WS-NUMERO-INFORMADO FROM SYSIN.
+
+           PERFORM 00001-CALCULA-CNPJ.
+
+           PERFORM 00002-MOSTRA-RESULTADO.
+
+           GOBACK.
+
+      *---------------------------------------------------------------*
+       00001-CALCULA-CNPJ              SECTION.
+      *---------------------------------------------------------------*
+
+           MOVE        WS-NUMERO-INFORMADO     TO
+                       WS-NUMERO.
+
+           MOVE        0               TO      WS-DV1-CALCULADO
+                                               WS-CT1-CALCULADO
+                                               WS-CT2-CALCULADO.
+
+           COMPUTE     GH  =  WS-NUMERO-UNIT(1)  *  2
+
+           MOVE        GH              TO      WS-GH.
+
+           COMPUTE     GH  =  WS-G + WS-H
+
+           COMPUTE     EF  =  WS-NUMERO-UNIT(3)  *  2
+
+           MOVE        EF              TO      WS-GH.
+
+           COMPUTE     EF  =  WS-E + WS-F
+
+           COMPUTE     CDD =  WS-NUMERO-UNIT(5)  *  2
+
+           MOVE        CDD             TO      WS-CD.
+
+           COMPUTE     CDD =  WS-C + WS-D
+
+           COMPUTE     AB  =  WS-NUMERO-UNIT(7)  *  2
+
+           MOVE        AB              TO      WS-AB.
+
+           COMPUTE     AB  =  WS-A + WS-B
+
+           COMPUTE     X1X2 = AB + CDD + EF + GH +
+                              WS-NUMERO-UNIT(2)  +
+                              WS-NUMERO-UNIT(4)  +
+                              WS-NUMERO-UNIT(6).
+           MOVE        X1X2            TO      WS-X1X2.
+
+           SUBTRACT WS-X2 FROM 10 GIVING WS-DV1-CALCULADO
+
+           COMPUTE     WS-SUM-MULT = 5 * WS-NUMERO-UNIT(1)  +
+                                     4 * WS-NUMERO-UNIT(2)  +
+                                     3 * WS-NUMERO-UNIT(3)  +
+                                     2 * WS-NUMERO-UNIT(4)  +
+                                     9 * WS-NUMERO-UNIT(5)  +
+                                     8 * WS-NUMERO-UNIT(6)  +
+                                     7 * WS-NUMERO-UNIT(7)  +
+                                     6 * WS-DV1-CALCULADO   +
+                                     5 * WS-NUMERO-UNIT(9)  +
+                                     4 * WS-NUMERO-UNIT(10) +
+                                     3 * WS-NUMERO-UNIT(11) +
+                                     2 * WS-NUMERO-UNIT(12)
+
+           DIVIDE      WS-SUM-MULT BY 11 GIVING WS-NUM-DGT
+                       REMAINDER   WS-RESTO.
+
+           IF  WS-RESTO            EQUAL       0 OR 1
+               MOVE    0               TO      WS-CT1-CALCULADO
+           ELSE
+               COMPUTE WS-CT1-CALCULADO = 11 - WS-RESTO
+           END-IF.
+
+           MOVE        0               TO      WS-SUM-MULT
+                                               WS-NUM-DGT
+                                               WS-RESTO.
+
+           COMPUTE     WS-SUM-MULT = 6 * WS-NUMERO-UNIT(1)  +
+                                     5 * WS-NUMERO-UNIT(2)  +
+                                     4 * WS-NUMERO-UNIT(3)  +
+                                     3 * WS-NUMERO-UNIT(4)  +
+                                     2 * WS-NUMERO-UNIT(5)  +
+                                     9 * WS-NUMERO-UNIT(6)  +
+                                     8 * WS-NUMERO-UNIT(7)  +
+                                     7 * WS-DV1-CALCULADO   +
+                                     6 * WS-NUMERO-UNIT(9)  +
+                                     5 * WS-NUMERO-UNIT(10) +
+                                     4 * WS-NUMERO-UNIT(11) +
+                                     3 * WS-NUMERO-UNIT(12) +
+                                     2 * WS-CT1-CALCULADO
+
+           DIVIDE      WS-SUM-MULT BY 11 GIVING WS-NUM-DGT
+                       REMAINDER   WS-RESTO.
+
+           IF  WS-RESTO            EQUAL       0 OR 1
+               MOVE    0               TO      WS-CT2-CALCULADO
+           ELSE
+               COMPUTE WS-CT2-CALCULADO = 11 - WS-RESTO
+           END-IF.
+
+       00001-FIM.                      EXIT.
+
+      *---------------------------------------------------------------*
+       00002-MOSTRA-RESULTADO          SECTION.
+      *---------------------------------------------------------------*
+
+           MOVE        WS-NUM-INFORMADO   TO   WS-NUM-INFORMADO-ED
+                                               WS-NUM-CALCULADO.
+
+           MOVE        WS-DV1-INFORMADO   TO   WS-DV1-INFORMADO-ED.
+
+           MOVE        WS-FIL-INFORMADA   TO   WS-FIL-INFORMADA-ED
+                                               WS-FIL-CALCULADA.
+
+           MOVE        WS-CT1-INFORMADO   TO   WS-CT1-INFORMADO-ED.
+
+           MOVE        WS-CT2-INFORMADO   TO   WS-CT2-INFORMADO-ED.
+
+           MOVE        WS-NUM-CALCULADO   TO   WS-NUM-CALCULADO-ED.
+
+           MOVE        WS-DV1-CALCULADO   TO   WS-DV1-CALCULADO-ED.
+
+           MOVE        WS-FIL-CALCULADA   TO   WS-FIL-CALCULADA-ED.
+
+           MOVE        WS-CT1-CALCULADO   TO   WS-CT1-CALCULADO-ED.
+
+           MOVE        WS-CT2-CALCULADO   TO   WS-CT2-CALCULADO-ED.
+
+           DISPLAY ' '
+
+           DISPLAY '*************** CALCCNPJ ****************'
+           DISPLAY '*                                       *'
+           DISPLAY '* CNPJ INFORMADO ==> ' WS-NUMERO-INFORMADO-ED ' *'
+           DISPLAY '*                                       *'
+           DISPLAY '* CNPJ CALCULADO ==> ' WS-NUMERO-CALCULADO-ED ' *'
+           DISPLAY '*                                       *'
+           DISPLAY '*---------------------------------------*'
+           DISPLAY '*                                       *'
+
+           IF  WS-NUMERO-INFORMADO  EQUAL  WS-NUMERO-CALCULADO
+               DISPLAY '* CNPJ INFORMADO OK                      *'
+           ELSE
+               DISPLAY '* CNPJ INFORMADO NAO OK, FAVOR VERIFICAR *'
+           END-IF.
+
+           DISPLAY '*                                       *'
+           DISPLAY '*************** CALCCNPJ ****************'.
+
+       00002-FIM.                      EXIT.
