@@ -1,0 +1,107 @@
+       IDENTIFICATION      DIVISION.
+       PROGRAM-ID.         PGERADOC.
+       AUTHOR.             ADILSON BIZARRIA.
+       INSTALLATION.       FUTURE SCHOOL.
+       DATE-WRITTEN.       12/07/2022.
+       DATE-COMPILED.
+      *--------------------------------------*
+      * GERADOR DE CPF E CNPJ VALIDO (BATCH) *
+      *--------------------------------------*
+       ENVIRONMENT         DIVISION.
+       CONFIGURATION       SECTION.
+
+       SOURCE-COMPUTER.    IBM-3090.
+       OBJECT-COMPUTER.    IBM-3090.
+
+       SPECIAL-NAMES.
+                           DECIMAL-POINT IS COMMA.
+
+       INPUT-OUTPUT        SECTION.
+
+       FILE-CONTROL.
+
+       DATA                DIVISION.
+       FILE                SECTION.
+
+       WORKING-STORAGE     SECTION.
+
+       77  IND1            PIC  9(02).
+       77  IND2            PIC  9(02).
+
+       77  VAL-RND         PIC  9(12)  COMP-3.
+       77  WS-SIZE         PIC  9(02).
+       77  WS-ACUM         PIC  9(04).
+       77  WS-FTOR         PIC  9(02).
+       77  WS-VALX         PIC  9(01).
+       77  WS-REST         PIC  9(02).
+
+       01  CPJ-DOC         PIC  X(14).
+       01  RD1-DOC         REDEFINES   CPJ-DOC.
+           03  CPF-DOC     PIC  X(11).
+           03  FILLER      PIC  X(03).
+       01  RD2-DOC         REDEFINES   CPJ-DOC.
+           03  NUM-DOC     PIC  9(01)  OCCURS  14.
+
+       01  CPF-AUX         PIC  999.999.999/99.
+       01  CPJ-AUX         PIC  99.999.999/9999/99.
+
+       LINKAGE             SECTION.
+
+       PROCEDURE           DIVISION.
+
+       000-INI-PROG.
+           MOVE     FUNCTION CURRENT-DATE (13:04)  TO   VAL-RND
+
+           COMPUTE  VAL-RND   =    VAL-RND   *   12345678
+           MOVE     VAL-RND   TO   CPF-DOC
+           MOVE     09        TO   WS-SIZE   IND2
+           PERFORM  100-CALC-010   02        TIMES
+           PERFORM  100-CALC-030
+
+           COMPUTE  VAL-RND   =    VAL-RND   *   140000  +  1
+           MOVE     VAL-RND   TO   CPJ-DOC
+
+           MOVE     12        TO   WS-SIZE   IND2
+           PERFORM  100-CALC-010   02        TIMES
+           PERFORM  100-CALC-030
+
+           STOP     RUN.
+
+       100-CALC-010.
+           MOVE     0         TO   WS-ACUM
+           MOVE     2         TO   WS-FTOR
+
+           PERFORM  100-CALC-020   VARYING  IND1  FROM  IND2  BY  -1
+                                   UNTIL    IND1    <   1
+
+           DIVIDE   WS-ACUM   BY   11       GIVING      WS-VALX
+                                            REMAINDER   WS-REST
+           ADD      1         TO   IND2
+
+           IF  WS-REST   <    2
+               MOVE      0    TO   NUM-DOC (IND2)
+           ELSE
+               SUBTRACT  11  FROM  WS-REST  GIVING      NUM-DOC (IND2)
+           END-IF.
+
+       100-CALC-020.
+           COMPUTE  WS-ACUM   =    WS-ACUM
+                              +    NUM-DOC (IND1)   *   WS-FTOR
+           IF  WS-FTOR   =    9    AND   WS-SIZE    =   12
+               MOVE      2    TO   WS-FTOR
+           ELSE
+               ADD       1    TO   WS-FTOR
+           END-IF.
+
+       100-CALC-030.
+           EVALUATE WS-SIZE
+              WHEN  9
+                    MOVE      CPF-DOC   TO   CPF-AUX
+                    INSPECT   CPF-AUX   CONVERTING  '/'  TO  '-'
+                    DISPLAY  'CPF..: '  CPF-AUX
+              WHEN  12
+                    MOVE      CPJ-DOC   TO   CPJ-AUX
+                    INSPECT   CPJ-AUX   CONVERTING  '/'  TO  '-'
+                                        AFTER       '/'
+                    DISPLAY  'CNPJ.: '  CPJ-AUX
+           END-EVALUATE.
