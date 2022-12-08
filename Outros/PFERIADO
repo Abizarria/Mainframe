@@ -1,0 +1,136 @@
+       IDENTIFICATION      DIVISION.
+       PROGRAM-ID.         PFERIADO.
+       AUTHOR.             ADILSON BIZARRIA.
+       INSTALLATION.       FUTURE SCHOOL.
+       DATE-WRITTEN.       12/08/2022.
+       DATE-COMPILED.
+      *---------------------------------------*
+      * CALCULO DAS DATAS DOS FERIADOS MOVEIS *
+      *---------------------------------------*
+       ENVIRONMENT         DIVISION.
+       CONFIGURATION       SECTION.
+
+       SOURCE-COMPUTER.    IBM-3090.
+       OBJECT-COMPUTER.    IBM-3090.
+
+       SPECIAL-NAMES.
+                           DECIMAL-POINT IS COMMA.
+
+       INPUT-OUTPUT        SECTION.
+
+       FILE-CONTROL.
+
+       DATA                DIVISION.
+       FILE                SECTION.
+
+       WORKING-STORAGE     SECTION.
+
+       77  WS00            PIC  9(04).
+       77  WS01            PIC  9(02).
+       77  WS02            PIC  9(02).
+       77  WS03            PIC  9(02).
+       77  WS04            PIC  9(01).
+       77  WS05            PIC  9(01).
+       77  WS06            PIC  9(02).
+       77  WS07            PIC  9(01).
+       77  WS08            PIC  9(02).
+       77  WS09            PIC  9(02).
+       77  WS10            PIC  9(01).
+       77  WS11            PIC  9(01).
+
+       77  TDIA            PIC  9(06).
+
+       01  DTAX            PIC  9(08).
+       01  DTAR            REDEFINES   DTAX.
+           03  ANOX        PIC  9(04).
+           03  MESX        PIC  9(02).
+           03  DIAX        PIC  9(02).
+
+       01  DT-TELA.
+           03  DD-TELA     PIC  9(02).
+           03  FILLER      PIC  X(01)  VALUE  '/'.
+           03  MM-TELA     PIC  9(02).
+           03  FILLER      PIC  X(01)  VALUE  '/'.
+           03  AA-TELA     PIC  9(04).
+
+       01  TAB-FER.
+           03  FILLER      PIC  X(17)  VALUE  'TERCA DE CARNAVAL'.
+           03  FILLER      PIC  X(17)  VALUE  'PAIXAO DE CRISTO '.
+           03  FILLER      PIC  X(17)  VALUE  'DOMINGO DE PASCOA'.
+           03  FILLER      PIC  X(17)  VALUE  'CORPOS CHRITI    '.
+       01  RED-FER         REDEFINES   TAB-FER.
+           03  DSC-FER     PIC  X(17)  OCCURS  04.
+
+       LINKAGE             SECTION.
+
+       PROCEDURE           DIVISION.
+
+       000-INI-PROG.
+           ACCEPT   ANOX   FROM   SYSIN
+
+           IF  ANOX  NOT   NUMERIC  OR
+               ANOX   <    1700     OR
+               ANOX   >    3000
+
+               DISPLAY  'DATA INVALIDA - PROGRAMA ENCERRADO!'
+           ELSE
+               PERFORM  100-CAL-DATA
+
+               COMPUTE  TDIA  = FUNCTION  INTEGER-OF-DATE (DTAX)
+
+               DISPLAY  ' '
+               DISPLAY  ' --> '  ANOX  ' <-----------------------'
+
+               PERFORM  200-EXB-DATA  VARYING  WS11  FROM  1  BY  1
+                                      UNTIL    WS11   >    4
+
+               DISPLAY  ' ---------------------------------'
+           END-IF
+
+           STOP     RUN.
+
+       100-CAL-DATA.
+           DIVIDE   ANOX  BY   019  GIVING  WS00  REMAINDER  WS01
+           DIVIDE   ANOX  BY   100  GIVING  WS02  REMAINDER  WS03
+           DIVIDE   WS02  BY   004  GIVING  WS04  REMAINDER  WS05
+           DIVIDE   WS03  BY   004  GIVING  WS06  REMAINDER  WS07
+
+           COMPUTE  WS08  =    WS02  /     3
+           COMPUTE  WS00  =  (   19  *  WS01  +   WS02
+                                     -  WS04  -   WS08    +   15 )
+
+           DIVIDE   WS00  BY   030  GIVING  WS00  REMAINDER  WS09
+
+           COMPUTE  WS00  =  (   32  +     2  *   WS05
+                                     +     2  *   WS06
+                                     -  WS09  -   WS07 )
+
+           DIVIDE   WS00  BY   007  GIVING  WS00  REMAINDER  WS10
+
+           COMPUTE  WS11  =  ( WS01  +    11  *   WS09
+                                     +    22  *   WS10 )  /   451
+
+           COMPUTE  WS00  =  ( WS09  +  WS10  -
+                                  7  *  WS11  +    114 )
+
+           DIVIDE   WS00  BY   031  GIVING  MESX  REMAINDER  DIAX
+
+           ADD      1     TO   DIAX.
+
+       200-EXB-DATA.
+           EVALUATE WS11
+              WHEN  1
+                    COMPUTE  DTAX = FUNCTION DATE-OF-INTEGER (TDIA - 47)
+              WHEN  2
+                    COMPUTE  DTAX = FUNCTION DATE-OF-INTEGER (TDIA - 02)
+              WHEN  3
+                    COMPUTE  DTAX = FUNCTION DATE-OF-INTEGER (TDIA + 00)
+              WHEN  4
+                    COMPUTE  DTAX = FUNCTION DATE-OF-INTEGER (TDIA + 60)
+           END-EVALUATE
+
+           MOVE     DIAX     TO   DD-TELA
+           MOVE     MESX     TO   MM-TELA
+           MOVE     ANOX     TO   AA-TELA
+
+           DISPLAY  '| '  DSC-FER (WS11) ' -> ' DT-TELA ' |'.
